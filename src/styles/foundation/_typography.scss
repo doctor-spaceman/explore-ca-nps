@@ -1,0 +1,32 @@
+body {
+    font-family: 'Markazi Text', Helvetica, sans-serif;
+    font-size: 22px;
+}
+
+h1, h2, h3, h4, h5, h6, 
+.h1, .h2, .h3, .h4, .h5, .h6, 
+.card {
+    font-family: 'Rubik', Helvetica, sans-serif;
+}
+h1, .h1 {
+    font-size: 32px;
+    margin-top: 0px;
+}
+h2, .h2 {
+    color: #345124;
+    font-size: 28px;
+}
+h3, .h3 {
+    color: #345124;
+    font-size: 20px;
+}
+h4, .h4 {
+    font-size: 18px;
+}
+.font__size--small {
+    font-size: 16px;
+}
+
+p {
+    margin-top: 0;
+}

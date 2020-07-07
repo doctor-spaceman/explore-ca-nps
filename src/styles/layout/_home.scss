@@ -1,0 +1,87 @@
+#app {
+    height: 100vh;
+}
+#app > div {
+    height: 100%;
+}
+
+#loadOverlay {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    transition: all 1s ease;
+    z-index: 100;
+}
+
+#map {
+    min-height: 400px;
+}
+
+#interactionPane {
+    background-color: #A0AA8F;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+}
+#interactionPane > .grid {
+    padding: 8px;
+}
+#interactionPane .header {
+    background-color: #46483C;
+    color: #ffffff;
+    padding: 16px;
+}
+#interactionPane .header a,
+#interactionPane .header a:active, 
+#interactionPane .header a:hover,
+#interactionPane .header a:link,  
+#interactionPane .header a:visited {
+    color: #ffffff;
+}
+#search {
+    outline: none;
+}
+.search {
+    position: relative;
+}
+.search__underscore {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background-color: #6FAB81;
+    height: 2px;
+    width: 0px;
+    transition: all .2s ease;
+}
+#search:focus + .search__underscore {
+    width: 100%;
+}
+
+#infoPane {
+    position: absolute;
+    top: 0;
+    right: -100%;
+    bottom: 0;
+    background-color: #EBE3CB;
+    box-sizing: border-box;
+    height: 100%;
+    opacity: 0;
+    overflow-y: auto;
+    padding: 24px;
+    width: 100%;
+    transition: all .2s ease;
+}
+#infoPane.is-open {
+    right: 0;
+    bottom: 0;
+    opacity: 1;
+}
+.info-content p {
+    line-height: .98;
+}
+.info-content > p:first-of-type {
+    font-size: 24px;
+}
