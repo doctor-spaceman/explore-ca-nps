@@ -8,6 +8,7 @@ const app = new Vue ({
     el: '#app',
     data: {
         alerts: [],
+        appOk: true,
         currentPark: undefined,
         currentParkCode: '',
         isOpen: false,
@@ -53,9 +54,10 @@ const app = new Vue ({
                 if ( response.status >= 200 && response.status <= 299 ) {
                     return response.json();
                 } else {
-                    let loadScreen = document.getElementById('loadOverlay');
-                    loadScreen.querySelector('.load-status').innerHTML = 'Sorry, park data could not be loaded.<br>Please try again later.';
-                    loadScreen.querySelector('.load-spinner').style.display = 'none';
+                    let appInstance = this;
+                    window.setTimeout(function() {
+                        appInstance.appOk = false;
+                    },3000);
 
                     throw Error(response.statusText);
                 }
