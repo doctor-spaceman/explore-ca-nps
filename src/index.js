@@ -185,6 +185,7 @@ const app = new Vue ({
                 this.map = new google.maps.Map(document.getElementById("map"), {
                     center: new google.maps.LatLng(36.7783,-119.4179),
                     mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    streetViewControl: false,
                     zoom: 8
                 });
                 this.addLocations(this.map);
