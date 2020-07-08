@@ -230,8 +230,6 @@ const app = new Vue ({
                         // Open info pane
                         appInstance.selectLocation(park.parkCode, map, park.latitude, park.longitude);
                         console.log('Selected ' + park.fullName);
-                        //$('#mapOverlay .map-content').html(pinContent);
-                        //openMapOverlay();
                     });
 
                     // Set marker to bounds
