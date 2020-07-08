@@ -47,7 +47,7 @@
                     <h1>Explore California NPS</h1>
                     <p class="font__size--small">Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a></p>
                     <div class="grid">
-                        <button @click="getRandomPark(0, parksCount)">Random Park</button>
+                        <button class="green bg-sand" @click="getRandomPark(0, parksCount)">Random Park</button>
                         <div class="search">
                             <label for="search" class="screen-reader-text">Search</label>
                             <input id="search" type="text" v-model="search" placeholder="Search Parks" />
@@ -67,7 +67,7 @@
                 </div>
                 <div id="infoPane" :class="{ 'is-open': isOpen }">
                     <div class="info-content" v-if="currentPark">
-                        <button @click="closeInfoPane"><< Back</button>
+                        <button id="backButton" class="white bg-green" @click="closeInfoPane">Back</button>
                         <h2>{{ currentPark.fullName }}</h2>
                         <p><a v-if="currentPark.url" :href="currentPark.url" target="_blank" rel="noopener">Visit Park Website</a></p>
                         <p v-if="currentPark.description">{{ currentPark.description }}</p>

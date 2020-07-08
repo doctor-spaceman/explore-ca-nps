@@ -1,0 +1,29 @@
+button {
+    display: inline-block;
+    border: none;
+    border-radius: 4px;
+    padding: 0 16px;
+    margin: 0 24px 0 0;
+    text-decoration: none;
+    font-family: $font--heading;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+button:hover,
+button:focus {
+    background: $sage;
+    color: $white;
+}
+
+#backButton:before {
+    display: inline;
+    content: '<< ';
+}
+
+#interactionPane button {
+    padding: 4px 12px;
+}
