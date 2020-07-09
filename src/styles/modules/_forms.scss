@@ -2,4 +2,26 @@
     border: 0;
     background: none;
     color: $white;
+    outline: none;
+}
+.search {
+    position: relative;
+}
+.search__underscore {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background-color: #6FAB81;
+    height: 2px;
+    width: 0px;
+    transition: all .2s ease;
+}
+#search:focus {
+    outline: 1px dotted transparent;
+    
+    & + .search__underscore {
+        width: 100%;
+    }
 }

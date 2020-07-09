@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Explore CA NPS</title>
+    <title>Explore National Parks in California</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
     <script src="<%= htmlWebpackPlugin.options.mapsUrl %>"></script>
     <link href="https://fonts.googleapis.com/css2?family=Markazi+Text&family=Rubik&display=swap" rel="stylesheet">
@@ -36,20 +36,25 @@
                             </svg>
                         </div>
                     </div>
-                    <p class="load-status" v-else :key=2>Sorry, park data could not be loaded.<br>Please try again later.</p>
+                    <p class="load-status" aria-role="alert" v-else :key=2>Sorry, park data could not be loaded.<br>Please try again later.</p>
                 </transition>
             </div>
         </div>
         <div class="grid">
-            <div id="map" class="col-1-2"></div>
+            <a href="#interactionPane" class="screen-reader-text">Skip to content</a>
+            <div id="map" class="col-1-2" role="region" aria-label="National Parks in California on a Google Map"></div>
             <div id="interactionPane" class="col-1-2">
                 <div class="header">
                     <h1>Explore California NPS</h1>
+                    <p>Looking to collect a few more stamps for your National Parks passport booklet? Or maybe 
+                        you're just interested in California's parks, monuments and historical sites. Use this 
+                        app to explore the parts of California that have been protected for all to enjoy.
+                    </p>
                     <p class="font__size--small">Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a></p>
                     <div class="grid">
                         <button class="green bg-sand" @click="getRandomPark(0, parksCount)">Random Park</button>
                         <div class="search">
-                            <label for="search" class="screen-reader-text">Search</label>
+                            <label for="search" class="screen-reader-text">Search Parks</label>
                             <input id="search" type="text" v-model="search" placeholder="Search Parks" />
                             <span class="search__underscore"></span>
                         </div>

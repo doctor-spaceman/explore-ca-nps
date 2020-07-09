@@ -42,26 +42,6 @@
 #interactionPane .header a:visited {
     color: #ffffff;
 }
-#search {
-    outline: none;
-}
-.search {
-    position: relative;
-}
-.search__underscore {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    background-color: #6FAB81;
-    height: 2px;
-    width: 0px;
-    transition: all .2s ease;
-}
-#search:focus + .search__underscore {
-    width: 100%;
-}
 
 #infoPane {
     position: absolute;
