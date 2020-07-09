@@ -7,7 +7,7 @@
     <title>Explore National Parks in California</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
     <script src="<%= htmlWebpackPlugin.options.mapsUrl %>"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Markazi+Text&family=Rubik&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vollkorn&family=Rubik&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -44,25 +44,26 @@
             <a href="#interactionPane" class="screen-reader-text">Skip to content</a>
             <div id="map" class="col-1-2" role="region" aria-label="National Parks in California on a Google Map"></div>
             <div id="interactionPane" class="col-1-2">
-                <div class="header">
+                <div class="header section-1x bg-olive white">
                     <h1>Explore California NPS</h1>
-                    <p>Looking to collect a few more stamps for your National Parks passport booklet? Or maybe 
-                        you're just interested in California's parks, monuments and historical sites. Use this 
-                        app to explore the parts of California that have been protected for all to enjoy.
+                    <p>
+                        Whether you're looking to collect a few more stamps for your National Parks passport booklet, or just interested in California's parks, monuments and historical sites, use this app to explore the parts of California that have been protected for all to enjoy.
                     </p>
-                    <p class="font__size--small">Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a></p>
-                    <div class="grid">
-                        <button class="green bg-sand" @click="getRandomPark(0, parksCount)">Random Park</button>
-                        <div class="search">
-                            <label for="search" class="screen-reader-text">Search Parks</label>
-                            <input id="search" type="text" v-model="search" placeholder="Search Parks" />
-                            <span class="search__underscore"></span>
-                        </div>
+                    <p class="font__size--small">
+                        Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a>
+                    </p>
+                </div>
+                <div class="header-functions grid section-1x">
+                    <button class="col-1-3 card green bg-sand" @click="getRandomPark(0, parksCount)">Random Park</button>
+                    <div class="search">
+                        <label for="search" class="screen-reader-text">Search Parks</label>
+                        <input id="search" type="text" v-model="search" placeholder="Search Parks" />
+                        <span class="search__underscore"></span>
                     </div>
                 </div>
                 <div v-if="!isOpen" class="grid">
                     <a 
-                    class="col-1-3 card" 
+                    class="col-1-3 card green bg-sand" 
                     v-for="park in searchFilteredParks" 
                     :key="park.id" 
                     :href="'#' + park.parkCode"
@@ -70,7 +71,7 @@
                         {{ park.fullName }}
                     </a>
                 </div>
-                <div id="infoPane" :class="{ 'is-open': isOpen }">
+                <div id="infoPane" class="bg-sand" :class="{ 'is-open': isOpen }" v-if="isOpen">
                     <div class="info-content" v-if="currentPark">
                         <button id="backButton" class="white bg-green" @click="closeInfoPane">Back</button>
                         <h2>{{ currentPark.fullName }}</h2>
@@ -91,7 +92,7 @@
                             <h3>Park Alerts</h3>
                             <ul>
                                 <li v-for="alert in parkAlerts" :key="alert.id">{{ alert.title }}<span v-if="alert.url"><br>
-                                <a :href="alert.url" target="_blank" rel="noopener">More Information</a></span></li>
+                                <a :href="alert.url" target="_blank" rel="noopener" class="font__size--small">More Information</a></span></li>
                             </ul>
                         </div>
                     </div>

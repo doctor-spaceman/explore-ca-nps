@@ -1,6 +1,7 @@
 a {
-    color: #5A9B8B;
-}
-a:hover {
-    color: #345124;
+    color: $teal;
+
+    &:hover {
+        color: $green;
+    }
 }

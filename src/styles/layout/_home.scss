@@ -1,8 +1,9 @@
 #app {
     height: 100vh;
-}
-#app > div {
-    height: 100%;
+
+    & > div {
+        height: 100%;
+    }
 }
 
 #loadOverlay {
@@ -21,26 +22,31 @@
 }
 
 #interactionPane {
-    background-color: #A0AA8F;
+    background-color: $scrub;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
+
+    & > .grid {
+        padding: 8px;
+    }
 }
-#interactionPane > .grid {
-    padding: 8px;
+#interactionPane .header a {
+    color: $white;
+
+    &:active,
+    &:hover,
+    &:link,
+    &:visited {
+        color: $white;
+    }
 }
-#interactionPane .header {
-    background-color: #46483C;
-    color: #ffffff;
-    padding: 16px;
+#interactionPane .header-functions {
+    background: lighten($olive,10%);
 }
-#interactionPane .header a,
-#interactionPane .header a:active, 
-#interactionPane .header a:hover,
-#interactionPane .header a:link,  
-#interactionPane .header a:visited {
-    color: #ffffff;
+#interactionPane .header-functions button {
+    padding: 4px 12px;
 }
 
 #infoPane {
@@ -48,7 +54,6 @@
     top: 0;
     right: -100%;
     bottom: 0;
-    background-color: #EBE3CB;
     box-sizing: border-box;
     height: 100%;
     opacity: 0;
@@ -56,15 +61,18 @@
     padding: 24px;
     width: 100%;
     transition: all .2s ease;
+
+    &.is-open {
+        right: 0;
+        bottom: 0;
+        opacity: 1;
+    }
 }
-#infoPane.is-open {
-    right: 0;
-    bottom: 0;
-    opacity: 1;
-}
-.info-content p {
-    line-height: .98;
-}
-.info-content > p:first-of-type {
-    font-size: 24px;
+.info-content {
+    p {
+        line-height: 1.2;
+    }
+    & > p:nth-of-type(2) {
+        font-size: 20px;
+    }
 }
