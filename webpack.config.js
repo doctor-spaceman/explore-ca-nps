@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssnanoPlugin = require('cssnano-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const devMode = process.env.NODE_ENV === 'development';
 const apiKeyMaps = process.env.APP_API_KEY_GMAPS;
 
@@ -60,7 +60,7 @@ module.exports = {
           new CssnanoPlugin({
             sourceMap: true
           }),
-          new UglifyJsPlugin()
+          new TerserPlugin()
         ]
     },
     // Plugins
