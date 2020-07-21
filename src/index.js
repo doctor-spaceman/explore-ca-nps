@@ -1,5 +1,5 @@
-import "./styles/style.scss";
-import pinImg from './assets/icon-map-pin.png';
+import './styles/style.scss';
+import pinImg from './assets/img/icon__map-pin--green.png';
 
 const apiKeyNPS = process.env.APP_API_KEY_NPS;
 const apiKeyWeather = process.env.APP_API_KEY_WEATHER;
