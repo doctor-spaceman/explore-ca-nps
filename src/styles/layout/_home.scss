@@ -48,7 +48,9 @@
 #interactionPane .header-functions button {
     padding: 4px 12px;
 }
-
+#interactionPane #parksList {
+    list-style: none;
+}
 #infoPane {
     position: absolute;
     top: 0;

@@ -61,16 +61,14 @@
                         <span class="search__underscore"></span>
                     </div>
                 </div>
-                <div v-if="!isOpen" class="grid">
-                    <a 
-                    class="col-1-3 card green bg-sand" 
+                <ul id="parksList" v-if="!isOpen" class="grid">
+                    <li class="col-1-3 card green bg-sand" 
                     v-for="park in searchFilteredParks" 
                     :key="park.id" 
-                    :href="'#' + park.parkCode"
                     @click.prevent="selectLocation(park.parkCode, map, park.latitude, park.longitude)">
-                        {{ park.fullName }}
-                    </a>
-                </div>
+                        <a :href="'#' + park.parkCode">{{ park.fullName }}</a>
+                    </li>
+                </ul>
                 <div id="infoPane" class="bg-sand" :class="{ 'is-open': isOpen }" v-if="isOpen">
                     <div class="info-content" v-if="currentPark">
                         <button id="backButton" class="white bg-green" @click="closeInfoPane">Back</button>

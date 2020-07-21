@@ -16,14 +16,12 @@ button {
         &:hover,
         &:focus {
             background: darken($sand,4%);
-            //color: $white;
         }
     }
     &.bg-green {
         &:hover,
         &:focus {
             background: lighten($green,8%);
-            //color: $white;
         }
     }
     &.card {
