@@ -164,23 +164,25 @@ const app = new Vue ({
             this.parkAlerts = alertsArr;
         },
         getParkWeather: function(lat, lng) {
-            fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&units=imperial&
-            exclude=current,minutely,hourly&appid=${apiKeyWeather}`)
-            .then(response => { 
-                if ( response.status >= 200 && response.status <= 299 ) {
-                    return response.json();
-                } else {
-                    throw Error(response.statusText);
-                }
-            })
-            .then(data => { 
-                console.log(data);
-                // Store parks alert data in this instance
-                //this.alerts = data.data;
-                // Store parks alert data in local storage with 2h expiry
-                //this.setStorageWithExpiry('alerts', data, 7200000);
-            })
-            .catch(error => { console.log(error); });
+            if ( lat !== '' && lng !== '' ) {
+                fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&units=imperial&
+                exclude=current,minutely,hourly&appid=${apiKeyWeather}`)
+                .then(response => { 
+                    if ( response.status >= 200 && response.status <= 299 ) {
+                        return response.json();
+                    } else {
+                        throw Error(response.statusText);
+                    }
+                })
+                .then(data => { 
+                    console.log(data);
+                    // Store parks alert data in this instance
+                    //this.alerts = data.data;
+                    // Store parks alert data in local storage with 2h expiry
+                    //this.setStorageWithExpiry('alerts', data, 7200000);
+                })
+                .catch(error => { console.log(error); })
+            }
         },
         initMap: function() {
             if ( this.parks ) {
