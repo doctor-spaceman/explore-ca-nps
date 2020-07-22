@@ -76,23 +76,16 @@
                         <p><a v-if="currentPark.url" :href="currentPark.url" target="_blank" rel="noopener">Visit Park Website</a></p>
                         <p v-if="currentPark.description">{{ currentPark.description }}</p>
                         <p v-if="currentPark.weatherInfo">{{ currentPark.weatherInfo }}</p>
-                        <div v-if="currentPark.operatingHours.length">
-                            <div v-if="Object.keys(currentPark.operatingHours[0].standardHours).length">
-                                <h3>Standard Hours</h3>
-                                <ul>
-                                    <li v-for="(value, name) in currentPark.operatingHours[0].standardHours" :key="(value, name)">
-                                        <span style="text-transform: capitalize;">{{ name }}</span>: {{ value }}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        <div v-if="currentPark.operatingHours[0].description">
+                            <h3>Park Access</h3>
+                            <p>{{ currentPark.operatingHours[0].description }}</p>
                         <div v-if="parkAlerts.length">
                             <h3>Park Alerts</h3>
                             <ul>
                                 <li v-for="alert in parkAlerts" :key="alert.id">{{ alert.title }}<span v-if="alert.url"><br>
                                 <a :href="alert.url" target="_blank" rel="noopener" class="font__size--small">More Information</a></span></li>
                             </ul>
-                        </div>
+                        </p>
                     </div>
                 </div>
             </div>

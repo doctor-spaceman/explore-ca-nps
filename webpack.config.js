@@ -74,7 +74,7 @@ module.exports = {
         new HtmlWebpackPlugin({
           template: path.resolve(__dirname, 'src', 'index.html'),
           minify: false,
-          mapsUrl: `https://maps.googleapis.com/maps/api/js?key=${apiKeyMaps}`
+          mapsUrl: `https://maps.googleapis.com/maps/api/js?key=${apiKeyMaps}&v=weekly&map_ids=d51bf260405d55a2`
         }),
         new MiniCssExtractPlugin({
             filename: 'style.css'

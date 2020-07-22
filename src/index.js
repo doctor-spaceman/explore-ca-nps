@@ -24,7 +24,7 @@ const app = new Vue ({
         parksCount: function() {
             return this.parks.length;
         },
-        searchFilteredParks() {
+        searchFilteredParks: function() {
             return this.parks.filter(park => {
                 return park.fullName.toLowerCase().includes(this.search.toLowerCase());
             });
@@ -188,6 +188,7 @@ const app = new Vue ({
             if ( this.parks ) {
                 this.map = new google.maps.Map(document.getElementById("map"), {
                     center: new google.maps.LatLng(36.7783,-119.4179),
+                    mapId: 'd51bf260405d55a2',
                     mapTypeId: google.maps.MapTypeId.ROADMAP,
                     streetViewControl: false,
                     zoom: 8
@@ -215,7 +216,7 @@ const app = new Vue ({
                 latitude = Number(park.latitude);
                 longitude = Number(park.longitude);
                 
-                // Some parks don't have coords (e.g. 0,0) so 
+                // Some parks don't have coords so 
                 // let's check that the coords exist
                 if ( latitude && longitude ) {
                     // Create marker
@@ -260,11 +261,11 @@ const app = new Vue ({
             map.fitBounds(bounds);
         },
         selectLocation: function(code, map, lat, lng) {
+            this.currentParkCode = code;
             this.zoomMap(map,lat,lng);
             this.openInfoPane();
             this.getParkAlerts(code);
             this.getParkWeather(lat, lng);
-            this.currentParkCode = code;
         },
         openInfoPane: function() {
             this.isOpen = true;
