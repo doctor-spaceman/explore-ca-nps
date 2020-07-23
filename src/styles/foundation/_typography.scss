@@ -15,10 +15,12 @@ h1, .h1 {
 h2, .h2 {
     color: $green;
     font-size: 28px;
+    margin: 23px 0px 12px 0px;
 }
 h3, .h3 {
     color: $green;
     font-size: 20px;
+    margin: 20px 0px 12px 0px; 
 }
 h4, .h4 {
     font-size: 18px;
@@ -29,4 +31,11 @@ h4, .h4 {
 
 p {
     margin-top: 0;
+}
+
+ul {
+    margin: 0px 0px 18px 0px;
+}
+li:not(:last-child) {
+    padding-bottom: 12px;
 }

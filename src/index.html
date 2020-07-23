@@ -73,14 +73,14 @@
                     <div class="info-content" v-if="currentPark">
                         <button id="backButton" class="white bg-green" @click="closeInfoPane">Back</button>
                         <h2>{{ currentPark.fullName }}</h2>
-                        <p><a v-if="currentPark.url" :href="currentPark.url" target="_blank" rel="noopener">Visit Park Website</a></p>
+                        <p><a v-if="currentPark.url" :href="currentPark.url" target="_blank" rel="noopener">Visit Website</a></p>
                         <p v-if="currentPark.description">{{ currentPark.description }}</p>
                         <p v-if="currentPark.weatherInfo">{{ currentPark.weatherInfo }}</p>
                         <div v-if="currentPark.operatingHours[0].description">
-                            <h3>Park Access</h3>
+                            <h3>Access</h3>
                             <p>{{ currentPark.operatingHours[0].description }}</p>
                         <div v-if="parkAlerts.length">
-                            <h3>Park Alerts</h3>
+                            <h3>Alerts</h3>
                             <ul>
                                 <li v-for="alert in parkAlerts" :key="alert.id">{{ alert.title }}<span v-if="alert.url"><br>
                                 <a :href="alert.url" target="_blank" rel="noopener" class="font__size--small">More Information</a></span></li>

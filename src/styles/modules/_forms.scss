@@ -1,9 +1,11 @@
 #search {
-    background: url('../assets/img/icon__search--white.svg') left center/contain no-repeat;
+    background: url('../assets/img/icon__search--white.svg') left center/28px no-repeat;
     border: 0;
+    box-sizing: border-box;
     color: $white;
+    height: 100%;
     outline: none;
-    padding-left: 28px;
+    padding: 8px 0px 8px 28px;
 }
 .search {
     flex: 1 0 auto;
