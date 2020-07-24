@@ -1,0 +1,31 @@
+#infoPane {
+  position: absolute;
+  top: 0;
+  right: -100%;
+  bottom: 0;
+  box-sizing: border-box;
+  height: 100%;
+  opacity: 0;
+  overflow-y: auto;
+  padding: 24px;
+  width: 100%;
+  transition: all .2s ease;
+
+  &.is-open {
+    right: 0;
+    bottom: 0;
+    opacity: 1;
+  }
+}
+.info-content {
+  p {
+    line-height: 1.2;
+  }
+  & > p:nth-of-type(2) {
+    font-size: 20px;
+  }
+}
+.info-content__weather ul {
+  list-style: none;
+  padding: 0px;
+}
