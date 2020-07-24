@@ -1,95 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Explore National Parks in California</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
-    <script src="<%= htmlWebpackPlugin.options.mapsUrl %>"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Vollkorn&family=Rubik&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Explore National Parks in California</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+  <script src="<%= htmlWebpackPlugin.options.mapsUrl %>"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Vollkorn&family=Rubik&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="app">
-        <div id="loadOverlay" class="bg-sand grid grid--column grid--center" v-if="!parks.length">
-            <div class="load-container">
-                <p class="h1 green">Explore California NPS</p>
-                <transition name="fade">
-                    <div class="load-status" v-if="appOk" :key=1>
-                        <p>Loading park data ...</p>
-                        <div class="load-spinner" title="0">
-                            <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                            width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
-                            <path opacity="0.2" fill=#5A9B8B d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
-                            s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
-                            c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>
-                            <path fill=#5A9B8B d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
-                            C22.32,8.481,24.301,9.057,26.013,10.047z">
-                            <animateTransform attributeType="xml"
-                                attributeName="transform"
-                                type="rotate"
-                                from="0 20 20"
-                                to="360 20 20"
-                                dur="1s"
-                                repeatCount="indefinite"/>
-                            </path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="load-status" aria-role="alert" v-else :key=2>Sorry, park data could not be loaded.<br>Please try again later.</p>
-                </transition>
+  <div id="app">
+    <aside id="loadOverlay" class="bg-sand grid grid--column grid--center" v-if="!parks.length">
+      <div class="load-container">
+        <p class="h1 green">Explore California NPS</p>
+        <transition name="fade">
+          <div class="load-status" v-if="appOk" :key=1>
+            <p>Loading park data ...</p>
+            <div class="load-spinner" title="0">
+              <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+              width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+                <path opacity="0.2" fill=#5A9B8B d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+                s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+                c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>
+                <path fill=#5A9B8B d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+                C22.32,8.481,24.301,9.057,26.013,10.047z">
+                <animateTransform attributeType="xml"
+                  attributeName="transform"
+                  type="rotate"
+                  from="0 20 20"
+                  to="360 20 20"
+                  dur="1s"
+                  repeatCount="indefinite"/>
+                </path>
+              </svg>
             </div>
-        </div>
-        <div class="grid">
-            <a href="#interactionPane" class="screen-reader-text">Skip to content</a>
-            <div id="map" class="col-1-2" role="region" aria-label="National Parks in California on a Google Map"></div>
-            <div id="interactionPane" class="col-1-2">
-                <div class="header section-1x bg-olive white">
-                    <h1>Explore California NPS</h1>
-                    <p>
-                        Whether you're looking to collect a few more stamps for your National Parks passport booklet, or just interested in California's parks, monuments and historical sites, use this app to explore the parts of California that have been protected for all to enjoy.
-                    </p>
-                    <p class="font__size--small">
-                        Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a>
-                    </p>
-                </div>
-                <div class="header-functions grid section-1x">
-                    <button class="col-1-3 card green bg-sand" @click="getRandomPark(0, parksCount)">Random Park</button>
-                    <div class="search">
-                        <label for="search" class="screen-reader-text">Search Parks</label>
-                        <input id="search" type="text" v-model="search" placeholder="Search Parks" />
-                        <span class="search__underscore"></span>
-                    </div>
-                </div>
-                <ul id="parksList" v-if="!isOpen" class="grid">
-                    <li class="col-1-3 card green bg-sand" 
-                    v-for="park in searchFilteredParks" 
-                    :key="park.id" 
-                    @click.prevent="selectLocation(park.parkCode, map, park.latitude, park.longitude)">
-                        <a :href="'#' + park.parkCode">{{ park.fullName }}</a>
-                    </li>
-                </ul>
-                <div id="infoPane" class="bg-sand" :class="{ 'is-open': isOpen }" v-if="isOpen">
-                    <div class="info-content" v-if="currentPark">
-                        <button id="backButton" class="white bg-green" @click="closeInfoPane">Back</button>
-                        <h2>{{ currentPark.fullName }}</h2>
-                        <p><a v-if="currentPark.url" :href="currentPark.url" target="_blank" rel="noopener">Visit Website</a></p>
-                        <p v-if="currentPark.description">{{ currentPark.description }}</p>
-                        <p v-if="currentPark.weatherInfo">{{ currentPark.weatherInfo }}</p>
-                        <div v-if="currentPark.operatingHours[0].description">
-                            <h3>Access</h3>
-                            <p>{{ currentPark.operatingHours[0].description }}</p>
-                        <div v-if="parkAlerts.length">
-                            <h3>Alerts</h3>
-                            <ul>
-                                <li v-for="alert in parkAlerts" :key="alert.id">{{ alert.title }}<span v-if="alert.url"><br>
-                                <a :href="alert.url" target="_blank" rel="noopener" class="font__size--small">More Information</a></span></li>
-                            </ul>
-                        </p>
-                    </div>
-                </div>
+          </div>
+          <p class="load-status" aria-role="alert" v-else :key=2>Sorry, park data could not be loaded.<br>Please try again later.</p>
+        </transition>
+      </div>
+    </aside>
+    <main class="grid">
+      <a href="#interactionPane" class="screen-reader-text">Skip to content</a>
+      <section id="map" class="col-1-2" role="region" aria-label="National Parks in California on a Google Map"></section>
+      <section id="interactionPane" class="col-1-2">
+        <div class="header bg-olive white">
+          <div class="header__content content--1x">
+            <h1>Explore California NPS</h1>
+            <p>
+              Whether you're looking to collect a few more stamps for your National Parks passport booklet, or just interested in California's parks, monuments and historical sites, use this app to explore the parts of California that have been protected for all to enjoy.
+            </p>
+            <p class="font__size--small">
+              Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a>
+            </p>
+          </div>
+          <div class="header__functions grid grid--unwrap section--1x">
+            <button class="col-1-3 card green bg-sand" @click="getRandomPark(0, parksCount)">Random Park</button>
+            <div class="search">
+              <label for="search" class="screen-reader-text">Search Parks</label>
+              <input id="search" type="text" v-model="search" placeholder="Search Parks" />
+              <span class="search__underscore"></span>
             </div>
+          </div>
         </div>
-    </div>
+        <ul id="parksList" v-if="!isOpen" class="grid content--1x">
+          <li class="col-1-3 card green bg-sand" 
+          v-for="park in searchFilteredParks" 
+          :key="park.id" 
+          @click.prevent="selectLocation(park.parkCode, map, park.latitude, park.longitude)">
+              <a :href="'#' + park.parkCode">{{ park.fullName }}</a>
+          </li>
+        </ul>
+        <article id="infoPane" class="bg-sand" :class="{ 'is-open': isOpen }" v-if="isOpen">
+          <div class="info-content" v-if="currentPark">
+            <button id="backButton" class="white bg-green" @click="closeInfoPane">Back</button>
+            <h2>{{ currentPark.fullName }}</h2>
+            <p><a v-if="currentPark.url" :href="currentPark.url" target="_blank" rel="noopener">Visit Website</a></p>
+            <p v-if="currentPark.description">{{ currentPark.description }}</p>
+            <div class="info-content__weather" v-if="parkWeather">
+              <h3>Weather</h3>
+              <ul class="grid grid--unwrap">
+                <li v-for="day in parkWeather" :key="day.dt">
+                    {{ day.dt }}: {{ day.weather[0].description }}
+                </li>
+              </ul>
+              <p v-if="currentPark.weatherInfo">{{ currentPark.weatherInfo }}</p>
+            </div>
+            <div v-if="currentPark.operatingHours[0].description">
+              <h3>Access</h3>
+              <p>{{ currentPark.operatingHours[0].description }}</p>
+            <div v-if="parkAlerts.length">
+              <h3>Alerts</h3>
+              <ul>
+                <li v-for="alert in parkAlerts" :key="alert.id">{{ alert.title }}<span v-if="alert.url"><br>
+                <a :href="alert.url" target="_blank" rel="noopener" class="font__size--small">More Information</a></span></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
 </body>
 </html>

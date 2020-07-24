@@ -1,35 +1,35 @@
 button {
-    display: inline-block;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 16px;
-    margin: 0 24px 0 0;
-    text-decoration: none;
-    font-family: $font--heading;
-    font-size: 16px;
-    cursor: pointer;
-    text-align: center;
-    -webkit-appearance: none;
-    -moz-appearance: none;
+  display: inline-block;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 16px;
+  margin: 0 24px 0 0;
+  text-decoration: none;
+  font-family: $font--heading;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 
-    &.bg-sand {
-        &:hover,
-        &:focus {
-            background: darken($sand,4%);
-        }
+  &.bg-sand {
+    &:hover,
+    &:focus {
+      background: darken($sand,4%);
     }
-    &.bg-green {
-        &:hover,
-        &:focus {
-            background: lighten($green,8%);
-        }
+  }
+  &.bg-green {
+    &:hover,
+    &:focus {
+      background: lighten($green,8%);
     }
-    &.card {
-        min-height: 0px;
-    }
+  }
+  &.card {
+    min-height: 0px;
+  }
 }
 
 #backButton:before {
-    display: inline;
-    content: '<< ';
+  display: inline;
+  content: '<< ';
 }
