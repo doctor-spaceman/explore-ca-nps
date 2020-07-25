@@ -169,6 +169,9 @@ const app = new Vue ({
     },
 
     getParkWeather (code, lat, lng) {
+      if ( this.parkWeather.length ) {
+        this.parkWeather = [];
+      }
       if ( !this.getStorageWithExpiry(`weather_${code}`) ) {
         if ( lat !== '' && lng !== '' ) {
           fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&units=imperial&
