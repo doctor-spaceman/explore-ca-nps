@@ -5,3 +5,23 @@ a {
     color: $green;
   }
 }
+
+.icon__link-external {
+  display: inline-block;
+  height: .9em;
+
+  &--heading {
+    background: url('../assets/img/icon__link-external--green.svg') left center/contain no-repeat;
+    margin-left: .5em;
+    width: .6em;
+  }
+  &--info {
+    background: url('../assets/img/icon__link-external--teal.svg') left top/contain no-repeat;
+    margin-left: .2em;
+    width: .8em;
+  
+    &:hover {
+      background-image: url('../assets/img/icon__link-external--green.svg');
+    }
+  }
+}

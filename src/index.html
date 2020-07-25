@@ -74,14 +74,18 @@
         <article id="infoPane" class="bg-sand" :class="{ 'is-open': isOpen }" v-if="isOpen">
           <div class="info-content" v-if="currentPark">
             <button id="backButton" class="white bg-green" @click="closeInfoPane">Back</button>
-            <h2>{{ currentPark.fullName }}</h2>
-            <p><a v-if="currentPark.url" :href="currentPark.url" target="_blank" rel="noopener">Visit Website</a></p>
+            <div class="grid grid--unwrap">
+              <h2>{{ currentPark.fullName }}<a class="icon__link-external icon__link-external--heading" v-if="currentPark.url" :href="currentPark.url" target="_blank" rel="noopener" aria-label="Visit Website" title="Visit Website"></a></h2>
+            </div>
+            <p></p>
             <p v-if="currentPark.description">{{ currentPark.description }}</p>
             <div class="info-content__weather" v-if="parkWeather">
               <h3>Weather</h3>
               <ul class="grid grid--unwrap">
                 <li v-for="day in parkWeather" :key="day.dt">
+                  <div class="grid">
                     {{ day.dt }}: {{ day.weather[0].description }}
+                  </div>
                 </li>
               </ul>
               <p v-if="currentPark.weatherInfo">{{ currentPark.weatherInfo }}</p>
@@ -92,8 +96,14 @@
             <div v-if="parkAlerts.length">
               <h3>Alerts</h3>
               <ul>
-                <li v-for="alert in parkAlerts" :key="alert.id">{{ alert.title }}<span v-if="alert.url"><br>
-                <a :href="alert.url" target="_blank" rel="noopener" class="font__size--small">More Information</a></span></li>
+                <li v-for="alert in parkAlerts" :key="alert.id">{{ alert.title }}
+                  <div v-if="alert.url" class="grid grid--unwrap">
+                    <a :href="alert.url" target="_blank" rel="noopener" class="font__size--small">
+                      More Information<span class="icon__link-external icon__link-external--info" aria-label="External link opens a new tab"></span>
+                    </a>
+                    
+                  </div>
+                </li>
               </ul>
             </div>
           </div>
