@@ -1,20 +1,28 @@
 #infoPane {
-  position: absolute;
-  top: 0;
-  right: -100%;
-  bottom: 0;
   box-sizing: border-box;
   height: 100%;
   opacity: 0;
   overflow-y: auto;
   padding: 24px;
+  visibility: hidden;
   width: 100%;
-  transition: all .2s ease;
+  transition: all .4s ease;
+
+  @media only screen and (min-width: 800px) {
+    position: absolute;
+    top: 0;
+    right: -100%;
+    bottom: 0;
+  }
 
   &.is-open {
-    right: 0;
-    bottom: 0;
     opacity: 1;
+    visibility: visible;
+
+    @media only screen and (min-width: 800px) {
+      right: 0;
+      bottom: 0;
+    }
   }
 }
 .info-content {
@@ -25,7 +33,27 @@
     font-size: 20px;
   }
 }
-.info-content__weather ul {
+.weather__forecast {
+  background: darken($sand,4%);
+  border-radius: 8px;
+  font-family: $font--heading;
+  font-size: .7em;
   list-style: none;
-  padding: 0px;
+  padding: 16px 16px 0px 16px;
+}
+.weather-item {
+  padding: 0px 4px 16px 4px;
+  text-align: center;
+  width: calc(25% - 16px);
+
+  &:nth-child(1), 
+  &:nth-child(2), 
+  &:nth-child(3), 
+  &:nth-child(4) {
+    border-bottom: 1px solid darken($sand,20%);
+  }
+}
+.weather-item__icon {
+  height: 50px;
+  width: 50px;
 }

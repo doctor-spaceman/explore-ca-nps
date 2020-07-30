@@ -111,6 +111,13 @@ const app = new Vue ({
     }
   },
   methods: {
+    convertUnixToDay (timestamp) {
+      const msTimestamp = timestamp * 1000;
+      const dateObj = new Date(msTimestamp)
+      const dateFormat = dateObj.toLocaleString("en-US", {weekday: "long"});
+      return dateFormat;
+    },
+
     setStorageWithExpiry (key, value, ttl) {
       const now = new Date();
 
@@ -184,18 +191,34 @@ const app = new Vue ({
             }
           })
           .then(data => { 
-            console.log(data.daily);
+            let weatherData = data.daily;
+            // Build a request URL for the weather condition icons
+            weatherData.forEach(day => {
+              day.weather[0].iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+            });
+    
+            console.log(weatherData);
+
             // Store park weather data in this instance
-            this.parkWeather = data.daily;
+            this.parkWeather = weatherData;
             // Store park weather data in local storage with 2h expiry
-            this.setStorageWithExpiry(`weather_${code}`, data.daily, 7200000);
+            this.setStorageWithExpiry(`weather_${code}`, weatherData, 7200000);
           })
           .catch(error => { console.log(error); })
+        } else {
+          this.parkWeather = [];
+          console.log(this.parkWeather);
         }
       } else {
         // Retrieve park weather data from local storage
         let weatherData = this.getStorageWithExpiry(`weather_${code}`);
+        // Build a request URL for the weather condition icons
+        weatherData.forEach(day => {
+          day.weather[0].iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+        });
+
         console.log(weatherData);
+
         // Store park weather data in this instance
         this.parkWeather = weatherData;
       }
@@ -293,9 +316,10 @@ const app = new Vue ({
       this.isOpen = true;
     },
 
-    closeInfoPane () {
+    closeInfoPane (code) {
       this.isOpen = false;
       this.zoomToBounds(this.map, this.mapBounds, this.mapMarkers); 
+      window.location.href = `#${code}`;
     }
   }
 });

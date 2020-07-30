@@ -1,24 +1,29 @@
 #app {
+  @media only screen and (min-width: 800px) {
     height: 100vh;
+  }
 
-    & > div,
-    & > main {
-      height: 100%;
-    }
+  & > main, 
+  & > aside {
+    height: 100%;
+  }
 }
 
 #map {
-  min-height: 400px;
-}
-
-#interactionPane {
-  background-color: $scrub;
   height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
 
   @media only screen and (max-width: 800px) {
-    overflow-y: hidden;
+    height: 380px;
+  }
+}
+
+#content {
+  background-color: $scrub;
+  height: 100%;
+
+  @media only screen and (min-width: 800px) {
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
   }
 }
