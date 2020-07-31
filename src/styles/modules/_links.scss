@@ -6,6 +6,14 @@ a {
   }
 }
 
+a.has-icon {
+  &:hover {
+    .icon__link-external--info {
+      background-image: url('../assets/img/icon__link-external--green.svg');
+    }
+  }
+}
+
 .icon__link-external {
   display: inline-block;
   height: .9em;
@@ -19,9 +27,5 @@ a {
     background: url('../assets/img/icon__link-external--teal.svg') left top/contain no-repeat;
     margin-left: .2em;
     width: .8em;
-  
-    &:hover {
-      background-image: url('../assets/img/icon__link-external--green.svg');
-    }
   }
 }

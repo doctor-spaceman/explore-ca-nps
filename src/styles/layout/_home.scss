@@ -13,7 +13,7 @@
   height: 100%;
 
   @media only screen and (max-width: 800px) {
-    height: 380px;
+    height: 360px;
   }
 }
 
@@ -26,4 +26,8 @@
     overflow-y: auto;
     position: relative;
   }
+}
+
+#footer {
+  flex-shrink: 0;
 }

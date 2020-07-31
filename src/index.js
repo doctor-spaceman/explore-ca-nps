@@ -10,7 +10,6 @@ const app = new Vue ({
     alerts: [],
     appOk: true,
     currentPark: undefined,
-    currentParkCode: '',
     isOpen: false,
     map: {},
     mapBounds: {},
@@ -31,19 +30,6 @@ const app = new Vue ({
       });
     }
   },
-  watch: {
-    currentParkCode () {
-      let code = this.currentParkCode;
-      let matchedPark;
-
-      this.parks.forEach(park => {
-        if ( park.parkCode === code ) {
-          matchedPark = park;
-        }
-      });
-      this.currentPark = matchedPark;
-    }
-  },
   mounted() {
     // Get parks
     // When parks data is not in local storage
@@ -62,7 +48,7 @@ const app = new Vue ({
         }
       })
       .then(data => { 
-        console.log(data.data);
+        //console.log(data.data);
         // Store parks data in this instance
         this.parks = data.data;
         // Store parks data in local storage with 7d expiry
@@ -75,7 +61,7 @@ const app = new Vue ({
     } else {
       // Retrieve parks data from local storage
       let parkData = this.getStorageWithExpiry('parks');
-      console.log(parkData.data);
+      //console.log(parkData.data);
       // Store parks data in this instance
       this.parks = parkData.data;
       this.initMap();
@@ -93,7 +79,7 @@ const app = new Vue ({
         }
       })
       .then(data => { 
-        console.log(data.data);
+        //console.log(data.data);
         // Store parks alert data in this instance
         this.alerts = data.data;
         // Store parks alert data in local storage with 2h expiry
@@ -105,16 +91,16 @@ const app = new Vue ({
     } else {
       // Retrieve parks data from local storage
       let alertsData = this.getStorageWithExpiry('alerts');
-      console.log(alertsData.data);
+      //console.log(alertsData.data);
       // Store parks data in this instance
       this.alerts = alertsData.data;
     }
   },
   methods: {
-    convertUnixToDay (timestamp) {
+    formatTimestamp (timestamp) {
       const msTimestamp = timestamp * 1000;
       const dateObj = new Date(msTimestamp)
-      const dateFormat = dateObj.toLocaleString("en-US", {month: "long", day: "numeric"});
+      const dateFormat = dateObj.toLocaleString('en-US', {month: 'long', day: 'numeric'});
       return dateFormat;
     },
 
@@ -151,9 +137,20 @@ const app = new Vue ({
       return item.value;
     },
 
+    setCurrentPark(code) {
+      let matchedPark;
+
+      this.parks.forEach(park => {
+        if ( park.parkCode === code ) {
+          matchedPark = park;
+        }
+      });
+      this.currentPark = matchedPark;
+    },
+    
     getRandomPark (min, max) {
       let result = Math.floor(Math.random() * (max - min) + min);
-      console.log('Park Index: ' + result);
+      //console.log('Park Index: ' + result);
       this.randomPark = this.parks[result];
 
       let randomParkCode = this.randomPark.parkCode;
@@ -197,8 +194,6 @@ const app = new Vue ({
               day.weather[0].iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
             });
     
-            console.log(weatherData);
-
             // Store park weather data in this instance
             this.parkWeather = weatherData;
             // Store park weather data in local storage with 2h expiry
@@ -207,7 +202,6 @@ const app = new Vue ({
           .catch(error => { console.log(error); })
         } else {
           this.parkWeather = [];
-          console.log(this.parkWeather);
         }
       } else {
         // Retrieve park weather data from local storage
@@ -216,8 +210,6 @@ const app = new Vue ({
         weatherData.forEach(day => {
           day.weather[0].iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
         });
-
-        console.log(weatherData);
 
         // Store park weather data in this instance
         this.parkWeather = weatherData;
@@ -249,8 +241,8 @@ const app = new Vue ({
 
       // Configure marker appearance
       let customIcon = {
-        url			: pinImg,
-        scaledSize  : new google.maps.Size(31,40),
+        url: pinImg,
+        scaledSize: new google.maps.Size(26,34),
       };
 
       parks.forEach(function(park) {
@@ -273,7 +265,6 @@ const app = new Vue ({
           google.maps.event.addListener(marker, 'click', function() {
             // Open info pane
             appInstance.selectLocation(park.parkCode, map, park.latitude, park.longitude);
-            console.log('Selected ' + park.fullName);
           });
 
           // Set marker to bounds
@@ -305,7 +296,7 @@ const app = new Vue ({
     },
 
     selectLocation (code, map, lat, lng) {
-      this.currentParkCode = code;
+      this.setCurrentPark(code);
       this.zoomMap(map,lat,lng);
       this.openInfoPane();
       this.getParkAlerts(code);
@@ -314,6 +305,7 @@ const app = new Vue ({
 
     openInfoPane () {
       this.isOpen = true;
+      window.location.href = `#content`;
     },
 
     closeInfoPane (code) {
