@@ -114,7 +114,7 @@ const app = new Vue ({
     convertUnixToDay (timestamp) {
       const msTimestamp = timestamp * 1000;
       const dateObj = new Date(msTimestamp)
-      const dateFormat = dateObj.toLocaleString("en-US", {weekday: "long"});
+      const dateFormat = dateObj.toLocaleString("en-US", {month: "long", day: "numeric"});
       return dateFormat;
     },
 
