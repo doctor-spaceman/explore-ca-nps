@@ -18,43 +18,34 @@ module.exports = {
     rules: [
       {
         test: /\.(sa|sc|c)ss$/,
-        use: [{
-          loader: devMode ? 'style-loader' : MiniCssExtractPlugin.loader
-        }, {
+        use: [
+          { loader: devMode ? 'style-loader' : MiniCssExtractPlugin.loader},
           // This loader resolves url() and @imports inside CSS
-          loader: 'css-loader', options: {
-              sourceMap: true     
-          }           
-        }, {
+          { loader: 'css-loader', options: { sourceMap: true } }, 
           // Then we apply postCSS fixes like autoprefixer and minifying
-          loader: 'postcss-loader', options: {
-              sourceMap: true
-          }
-        }, {
-          // First we transform SASS to standard CSS
-          loader: 'sass-loader', options: {
-              sourceMap: true
-          }
-        }]
+          { loader: 'postcss-loader', options: { sourceMap: true } }, 
+          // Transform SASS to standard CSS
+          { loader: 'sass-loader', options: { sourceMap: true } },
+        ],
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: [{
-          loader: 'babel-loader'
-        }]
+        use: [
+          { loader: 'babel-loader' }
+        ],
       },
       {
         test: /\.(png|jpe?g|gif|svg)$/,
-        use: [{
-          loader: 'file-loader', options: {
+        use: [
+          { loader: 'file-loader', options: {
             publicPath: './assets/img', 
             outputPath: 'assets/img', 
             name: '[name].[ext]'
-          }
-        }]
-      }
-    ]
+          } },
+        ],
+      },
+    ],
   },
   // Optimizers
   optimization: {
