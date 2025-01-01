@@ -1,0 +1,27 @@
+#interactionPane {
+  flex: 1 0 auto;
+  width: 100%;
+}
+.header a {
+  color: var(--var-color-white);
+
+  &:active,
+  &:hover,
+  &:link,
+  &:visited {
+    color: var(--var-color-white);
+  }
+}
+.header__functions {
+  background: var(--var-color-olive);
+}
+.header__functions button {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+}
+.header__functions .search {
+  flex: 1 1 auto;
+}
+#parksList {
+  list-style: none;
+}

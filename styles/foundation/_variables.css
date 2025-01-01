@@ -1,0 +1,15 @@
+.root {
+  /*---Colors---*/
+  --var-color-white: #ffffff;
+  --var-color-black: #000000;
+  --var-color-green: #345124;
+  --var-color-olive: #46483C;
+  --var-color-sage: #6FAB81;
+  --var-color-sand: #EBE3CB;
+  --var-color-scrub: #A0AA8F;
+  --var-color-teal: #5A9B8B;
+
+  /*---Fonts---*/  
+  --var-font--primary: 'Vollkorn', Helvetica, sans-serif;
+  --var-font--heading: 'Rubik', Helvetica, sans-serif;
+}

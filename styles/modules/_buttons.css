@@ -1,0 +1,34 @@
+button {
+  display: inline-block;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 16px;
+  margin: 0 24px 0 0;
+  text-decoration: none;
+  font-family: var(--var-font--heading);
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+button.bg-sand {
+  &:hover,
+  &:focus {
+    background: var(--var-color-sand);
+  }
+}
+button.bg-green {
+  &:hover,
+  &:focus {
+    background: var(--var-color-green);
+  }
+}
+button.card {
+  min-height: 0px;
+}
+
+#backButton:before {
+  display: inline;
+  content: '<< ';
+}
