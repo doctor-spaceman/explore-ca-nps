@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Explore National Parks in California</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+  <script src="https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/core/lit-core.min.js" type="module" defer></script>
+  <script src="././components/component-grid.js" type="module"></script>
+  <!--<script src="././assets/js/index.js" type="module" defer></script>-->
   <script src="<%= htmlWebpackPlugin.options.mapsUrl %>"></script>
   <link href="https://fonts.googleapis.com/css2?family=Vollkorn&family=Rubik&display=swap" rel="stylesheet">
 </head>
@@ -40,8 +42,9 @@
         </transition>
       </div>
     </aside>
+    <a href="#content" id="skipToContent" class="screen-reader-text">Skip to content</a>
+    <parks-grid></parks-grid>
     <main class="grid">
-      <a href="#content" id="skipToContent" class="screen-reader-text">Skip to content</a>
       <section id="map" class="col-1-2" role="region" aria-label="National Parks in California on a Google Map"></section>
       <section id="content" class="grid grid--column grid--unwrap col-1-2">
         <div id="interactionPane" :class="{ 'is-open': isOpen }" v-show="!isOpen">
