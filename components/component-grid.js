@@ -20,6 +20,9 @@ class ParksGrid extends LitElement {
     super.connectedCallback();
 
     console.log('Parks Grid ready');
+
+    // Load Google Maps Javscript API
+
   }
 
   _getParks() {
@@ -44,7 +47,7 @@ class ParksGrid extends LitElement {
         this.parks = data.data;
         // Store parks data in local storage with 7d expiry
         this._setStorageWithExpiry('parks', data, 604800000);
-        this.initMap();
+        if (this.parks.length) this._initMap();
       })
       .catch(error => { console.log(error); });
       
@@ -55,7 +58,7 @@ class ParksGrid extends LitElement {
       //console.log(parkData.data);
       // Store parks data in this instance
       this.parks = parkData.data;
-      this.initMap();
+      if (this.parks.length) this._initMap();
     }
   }
 
@@ -171,6 +174,21 @@ class ParksGrid extends LitElement {
       return null;
     }
     return item.value;
+  }
+
+  async _initMap() {
+    const { Map } = await google.maps.importLibrary("maps");
+    this.map = new Map(document.getElementById("map"), {
+      center: {
+        lat: 36.7783,
+        lng: -119.4179,
+      },
+      mapId: 'd51bf260405d55a2',
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      streetViewControl: false,
+      zoom: 8
+    });
+    this.addLocations(this.map);
   }
 
   render() {
