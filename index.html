@@ -1,144 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Explore National Parks in California</title>
-  <script src="https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/core/lit-core.min.js" type="module" defer></script>
-  <script type="module">
-    import { APP_API_KEY_GMAPS } from '././assets/js/_keys.js';
-    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-      key: APP_API_KEY_GMAPS,
-      v: "weekly",
-    });
-  </script>
-  <script src="././components/component-grid.js" type="module"></script>
-  <!--<script src="././assets/js/index.js" type="module" defer></script>-->
-  <link href="https://fonts.googleapis.com/css2?family=Vollkorn&family=Rubik&display=swap" rel="stylesheet">
-</head>
-<body>
-  <div id="app">
-    <aside id="loadOverlay" class="bg-sand grid grid--column grid--center" v-if="!parks.length">
-      <div class="load-container">
-        <p class="h1 green">Explore California NPS</p>
-        <transition name="fade">
-          <div class="load-status" v-if="appOk" :key=1>
-            <p>Loading park data ...</p>
-            <div class="load-spinner" title="0">
-              <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-              width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
-                <path opacity="0.2" fill=#5A9B8B d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
-                s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
-                c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>
-                <path fill=#5A9B8B d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
-                C22.32,8.481,24.301,9.057,26.013,10.047z">
-                <animateTransform attributeType="xml"
-                  attributeName="transform"
-                  type="rotate"
-                  from="0 20 20"
-                  to="360 20 20"
-                  dur="1s"
-                  repeatCount="indefinite"/>
-                </path>
-              </svg>
-            </div>
-          </div>
-          <p class="load-status" aria-role="alert" v-else :key=2>Sorry, park data could not be loaded.<br>Please try again later.</p>
-        </transition>
-      </div>
-    </aside>
-    <a href="#content" id="skipToContent" class="screen-reader-text">Skip to content</a>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Explore National Parks in California</title>
+    <script src="https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/core/lit-core.min.js" type="module" defer></script>
+    <script type="module">
+      import { APP_API_KEY_GMAPS } from '././assets/js/_keys.js';
+      (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+        key: APP_API_KEY_GMAPS,
+        v: "weekly",
+      });
+    </script>
+    <script src="././components/component-overlay.js" type="module"></script>
+    <script src="././components/component-grid.js" type="module"></script>
+    <link type="text/css" rel="stylesheet" href="././assets/css/style.css"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Vollkorn&family=Rubik&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <parks-overlay></parks-overlay>
+    <a href="#parksContent" id="skipToContent" class="sr-only">Skip to content</a>
     <parks-grid></parks-grid>
-    <main class="grid">
-      <section id="map" class="col-1-2" role="region" aria-label="National Parks in California on a Google Map"></section>
-      <section id="content" class="grid grid--column grid--unwrap col-1-2">
-        <div id="interactionPane" :class="{ 'is-open': isOpen }" v-show="!isOpen">
-          <div class="header bg-olive white">
-            <div class="header__content content--1x">
-              <h1>Explore California NPS</h1>
-              <p>
-                Whether you're looking to collect a few more stamps for your National Parks passport booklet, or just interested in California's parks, monuments and historical sites, use this app to explore the parts of California that have been protected for all to enjoy.
-              </p>
-            </div>
-            <div class="header__functions grid grid--unwrap section--1x">
-              <button class="col-1-3 card green bg-sand" @click="getRandomPark(0, parksCount)">Random Park</button>
-              <div class="search">
-                <label for="search" class="screen-reader-text">Search Parks</label>
-                <input id="search" type="text" v-model="search" placeholder="Search Parks" />
-                <span class="search__underscore"></span>
-              </div>
-            </div>
-          </div>
-          <ul id="parksList" class="grid content--1x" v-show="searchFilteredParks.length">
-            <li class="col-1-3 card green bg-sand" 
-            tabindex="0" 
-            :id="park.parkCode" 
-            :aria-label="park.fullName" 
-            v-for="park in searchFilteredParks" 
-            :key="park.id" 
-            @click="selectLocation(park.parkCode, map, park.latitude, park.longitude);" 
-            @keydown.enter="selectLocation(park.parkCode, map, park.latitude, park.longitude)">
-              {{ park.fullName }}
-            </li>
-          </ul>
-          <div id="listError" class="grid grid--column grid--center content--1x" v-show="!searchFilteredParks.length">
-            <p class="white">Sorry, there are no results for that search term.</p>
-          </div>
-        </div>
-        <article id="infoPane" class="bg-sand" :class="{ 'is-open': isOpen }">
-          <div class="info-content" v-if="currentPark">
-            <button id="backButton" class="white bg-green" @click="closeInfoPane(currentPark.parkCode)">
-              Back
-            </button>
-            <div class="grid grid--unwrap">
-              <h2>{{ currentPark.fullName }}<a class="icon__link-external icon__link-external--heading" v-if="currentPark.url" :href="currentPark.url" target="_blank" rel="noopener" aria-label="Visit Website" title="Visit Website"></a></h2>
-            </div>
-            <p v-if="currentPark.description">{{ currentPark.description }}</p>
-            <div class="info-content__weather">
-              <h3>Weather</h3>
-              <ul class="weather__forecast grid grid--space" v-if="parkWeather.length">
-                <li class="weather-item grid grid--center grid--column" v-for="day in parkWeather" :key="day.dt">
-                  <img class="weather-item__icon" :src="day.weather[0].iconUrl" :alt="day.weather[0].description" :title="day.weather[0].description"/>
-                  <span class="weather-item__day">{{ formatTimestamp(day.dt) }}</span>
-                  <span class="weather-item__temp">{{ day.temp.max.toFixed() }} / {{ day.temp.min.toFixed() }}&#186;F</span>
-                </li>
-              </ul>
-              <p class="weather__description" v-if="currentPark.weatherInfo">{{ currentPark.weatherInfo }}</p>
-            </div>
-            <div v-if="currentPark.operatingHours[0].description">
-              <h3>Access</h3>
-              <p>{{ currentPark.operatingHours[0].description }}</p>
-            <div v-if="parkAlerts.length">
-              <h3>Alerts</h3>
-              <ul>
-                <li v-for="alert in parkAlerts" :key="alert.id">{{ alert.title }}
-                  <div v-if="alert.url" class="grid grid--unwrap">
-                    <a :href="alert.url" target="_blank" rel="noopener" class="has-icon font__size--small">
-                      More Information<span class="icon__link-external icon__link-external--info" aria-label="External link opens a new tab"></span>
-                    </a>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-        <footer id="footer" class="header bg-olive white" v-show="!isOpen">
-          <div class="grid grid--space header__content content--1x">
-            <p class="font__size--small">
-              Created by <a href="https://github.com/doctor-spaceman/explore-ca-nps" target="_blank" rel="noopener">Matt McLean</a>
-            </p>
-            <p class="font__size--small">
-              Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a>
-            </p>
-          </div>
-        </footer>
-      </section>
-      <div style="clear: both;"></div>
-    </main>
-  </div>
-  <noscript>
-    <p>This app requires Javascript.</p>
-  </noscript>
-</body>
+    <noscript>
+      <p>This app requires Javascript.</p>
+    </noscript>
+  </body>
 </html>

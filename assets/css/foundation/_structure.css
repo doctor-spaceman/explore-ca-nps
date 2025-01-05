@@ -1,18 +1,18 @@
-.grid {
+.flex {
   display: flex;
   flex-wrap: wrap;
 }
-.grid--column {
+.flex-column {
   flex-direction: column;
 }
-.grid--center {
+.flex-center {
   align-items: center;
   justify-content: flex-start;
 }
-.grid--space {
+.flex-justify-space-between {
   justify-content: space-between;
 }
-.grid--unwrap {
+.flex-nowrap {
   flex-wrap: nowrap;
 }
 
