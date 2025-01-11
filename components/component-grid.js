@@ -1,5 +1,6 @@
-import { LitElement, css, html } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/core/lit-core.min.js';
+import { LitElement, css, html, nothing, repeat, when } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/all/lit-all.min.js';
 import { APP_API_KEY_NPS, APP_API_KEY_WEATHER } from '../assets/js/_keys.js';
+import { structure, theme, typography } from '../assets/js/styles.js';
 
 class ParksGrid extends LitElement {
   static properties = {
@@ -21,8 +22,8 @@ class ParksGrid extends LitElement {
   constructor() {
     super();
 
-    this.appOk = true;
     this.isOpen = false;
+    this.parks = [];
   }
 
   async connectedCallback() {
@@ -91,15 +92,15 @@ class ParksGrid extends LitElement {
       }));
     } else {
       // Get parks data from API endpoint
-      let response = await fetch(`https://developer.nps.gov/api/v1/parks?stateCode=CA&api_key=${APP_API_KEY_NPS}`);
       let parksData;
+      let response = await fetch(`https://developer.nps.gov/api/v1/parks?stateCode=CA&api_key=${APP_API_KEY_NPS}`);
 
       if (response?.status >= 200 && response?.status <= 299) {
         parksData = await response.json();
       } else {
         window.setTimeout(() => {
-          this.appOk = false;
-        },3000);
+          document.dispatchEvent(new CustomEvent('parks:data-not-ready'));
+        }, 3000);
         throw Error(response.statusText);
       }
       
@@ -115,7 +116,8 @@ class ParksGrid extends LitElement {
             detail: parksData.data
           }));
         } catch(error) {
-          console.warn(error);
+          console.warn("Error retrieving data from parks API");
+          console.log(error.name + ': ' + error.message);
         }
       }
     }
@@ -142,7 +144,8 @@ class ParksGrid extends LitElement {
           // Store parks alert data in localStorage with 2h expiry
           this._setStorageWithExpiry('alerts', data, 7200000);
         } catch(error) {
-          console.warn(error); 
+          console.warn("Error retrieving alerts data from parks API");
+          console.log(error.name + ': ' + error.message);
         }
       }
     } else {
@@ -323,124 +326,135 @@ class ParksGrid extends LitElement {
 
   render() {
     return html`
-      <main id="parks">
-        <section id="parksMap" class="parks__section">
-          <div
-            id="map"
-            class="col-1-2"
-            role="region"
-            aria-label="National Parks in California on a Google Map">
-          </div>
-        </section>
-        <section id="parksContent" class="parks__section" class="grid grid--column grid--unwrap col-1-2">
-          <div
-            id="interactionPane"
-            class="${this.isOpen ? 'is-open' : ''}"
-          >
-            <div class="header bg-olive white">
-              <div class="header__content content--1x">
-                <h1>Explore California NPS</h1>
-                <p>
-                  Whether you're looking to collect a few more stamps for your National Parks passport booklet, or just interested in California's parks, monuments and historical sites, use this app to explore the parts of California that have been protected for all to enjoy.
-                </p>
-              </div>
-              <div class="header__functions grid grid--unwrap section--1x">
-                <button class="col-1-3 card green bg-sand" @click="getRandomPark(0, parksCount)">Random Park</button>
-                <div class="search">
-                  <label for="search" class="screen-reader-text">Search Parks</label>
-                  <input id="search" type="text" v-model="search" placeholder="Search Parks" />
-                  <span class="search__underscore"></span>
-                </div>
-              </div>
-            </div>
-            <ul id="parksList" class="grid content--1x" v-show="searchFilteredParks.length">
-              <li class="col-1-3 card green bg-sand" 
-              tabindex="0" 
-              :id="park.parkCode" 
-              :aria-label="park.fullName" 
-              v-for="park in searchFilteredParks" 
-              :key="park.id" 
-              @click="_selectLocation(park.parkCode, map, park.latitude, park.longitude);" 
-              @keydown.enter="_selectLocation(park.parkCode, map, park.latitude, park.longitude)">
-                {{ park.fullName }}
-              </li>
-            </ul>
-            <div id="listError" class="grid grid--column grid--center content--1x" v-show="!searchFilteredParks.length">
-              <p class="white">Sorry, there are no results for that search term.</p>
-            </div>
-          </div>
-          <article id="infoPane" class="bg-sand" :class="{ 'is-open': isOpen }">
-            <div class="info-content" v-if="currentPark">
-              <button id="backButton" class="white bg-green" @click="closeInfoPane(currentPark.parkCode)">
-                Back
-              </button>
-              <div class="grid grid--unwrap">
-                <h2>{{ currentPark.fullName }}<a class="icon__link-external icon__link-external--heading" v-if="currentPark.url" :href="currentPark.url" target="_blank" rel="noopener" aria-label="Visit Website" title="Visit Website"></a></h2>
-              </div>
-              <p v-if="currentPark.description">{{ currentPark.description }}</p>
-              <div class="info-content__weather">
-                <h3>Weather</h3>
-                <ul class="weather__forecast grid grid--space" v-if="parkWeather.length">
-                  <li class="weather-item grid grid--center grid--column" v-for="day in parkWeather" :key="day.dt">
-                    <img class="weather-item__icon" :src="day.weather[0].iconUrl" :alt="day.weather[0].description" :title="day.weather[0].description"/>
-                    <span class="weather-item__day">{{ formatTimestamp(day.dt) }}</span>
-                    <span class="weather-item__temp">{{ day.temp.max.toFixed() }} / {{ day.temp.min.toFixed() }}&#186;F</span>
-                  </li>
-                </ul>
-                <p class="weather__description" v-if="currentPark.weatherInfo">{{ currentPark.weatherInfo }}</p>
-              </div>
-              <div v-if="currentPark.operatingHours[0].description">
-                <h3>Access</h3>
-                <p>{{ currentPark.operatingHours[0].description }}</p>
-              <div v-if="parkAlerts.length">
-                <h3>Alerts</h3>
-                <ul>
-                  <li v-for="alert in parkAlerts" :key="alert.id">{{ alert.title }}
-                    <div v-if="alert.url" class="grid grid--unwrap">
-                      <a :href="alert.url" target="_blank" rel="noopener" class="has-icon font__size--small">
-                        More Information<span class="icon__link-external icon__link-external--info" aria-label="External link opens a new tab"></span>
-                      </a>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </article>
-          <footer id="footer" class="header bg-olive white" v-show="!isOpen">
-            <div class="grid grid--space header__content content--1x">
-              <p class="font__size--small">
-                Created by <a href="https://github.com/doctor-spaceman/explore-ca-nps" target="_blank" rel="noopener">Matt McLean</a>
-              </p>
-              <p class="font__size--small">
-                Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a>
+      <section id="parksMap" class="parks__section bg-sand">
+        <div
+          id="map"
+          class="col-1-2"
+          role="region"
+          aria-label="National Parks in California on a Google Map">
+        </div>
+      </section>
+      <section id="parksContent" class="parks__section bg-scrub">
+        <div
+          id="interactionPane"
+          class="${this.isOpen ? 'is-open' : ''}"
+        >
+          <div class="header bg-olive c-white">
+            <div class="header__content">
+              <h1>Explore California NPS</h1>
+              <p>
+                Whether you're looking to collect a few more stamps for your National Parks passport booklet, or just interested in California's parks, monuments and historical sites, use this app to explore the parts of California that have been protected for all to enjoy.
               </p>
             </div>
-          </footer>
-        </section>
-        <div style="clear: both;"></div>
-      </main>
+            <parks-actions></parks-actions>
+          </div>
+          ${when(this.parks.length,
+            () => html`
+              <ul id="parksList" class="grid" data-show="searchFilteredParks.length">
+                 ${repeat(
+                  this.parks, (park) => park.parkCode, (park, index) => html`
+                    <li
+                      class="card bg-sand c-green"
+                    >
+                      ${park.fullName}
+                    </li>
+                  `
+                )}
+                <!--<li class="col-1-3 card green bg-sand"
+                tabindex="0" 
+                :id="park.parkCode" 
+                :aria-label="park.fullName" 
+                v-for="park in searchFilteredParks" 
+                :key="park.id" 
+                @click="_selectLocation(park.parkCode, map, park.latitude, park.longitude);" 
+                @keydown.enter="_selectLocation(park.parkCode, map, park.latitude, park.longitude)">
+                  {{ park.fullName }}
+                </li>-->
+              </ul>
+            `,
+            () => nothing,
+          )}
+          
+           
+          <div id="listError" class="grid grid--column grid--center content--1x" v-show="!searchFilteredParks.length">
+            <p class="white">Sorry, there are no results for that search term.</p>
+          </div>
+        </div>
+      </section>
     `;
   }
 
-  static styles = css`
-    #parks {
-      display: flex;
-      flex-direction: column;
+  static styles = [
+    structure,
+    theme,
+    typography,
+    css`
+      :host {
+        display: flex;
+        flex-direction: column;
 
-      @media screen and (min-width: 768px) {
-        flex-direction: row;
+        @media screen and (min-width: 768px) {
+          height: 100vh;
+          flex-direction: row;
+        }
       }
-    }
-    .parks__section {
-      width: 100%;
+      .parks__section {
+        width: 100%;
 
-      @media screen and (min-width: 768px) {
-        width: 50%;
+        @media screen and (min-width: 768px) {
+          width: 50%;
+        }
       }
-    }
-    #map {
-      height: 100%;
-    }
-  `;
+      #parksMap {
+      }
+      #map {
+        height: 100%;  
+        max-height: 360px;
+        
+        @media only screen and (min-width: 768px) {
+          max-height: unset;
+        }
+      }
+      #parksContent {
+        height: 100%;
+
+        @media only screen and (min-width: 768px) {
+          overflow-x: hidden;
+          overflow-y: auto;
+          position: relative;
+        }
+      }
+      .header__content {
+        padding: var(--var-spacing-4);
+      }
+      #parksList {
+        gap: var(--var-spacing-4);
+        grid-template-columns: 1fr 1fr 1fr;
+        list-style: none;
+        margin: 0;
+        padding: var(--var-spacing-4);
+      }
+      .card {
+        border-radius: 4px;
+        box-sizing: border-box;
+        cursor: pointer;
+        font: var(--var-font-p);
+        font-family: var(--var-font-heading);
+        min-height: 100px;
+        padding: 8px;
+        text-align: center;
+        text-decoration: none;
+
+        &:hover,
+        &:focus {
+          background: var(--var-color-sand);
+        }
+        a {
+          color: var(--var-color-green);
+          text-decoration: none;
+        }
+      }
+    `
+  ];
 }
 customElements.define('parks-grid', ParksGrid);

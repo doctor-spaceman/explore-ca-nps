@@ -1,33 +1,14 @@
-#app {
-  @media only screen and (min-width: 800px) {
-    height: 100vh;
-  }
-
-  & > main, 
-  & > aside {
-    height: 100%;
-  }
+body {
+  display: flex;
+  flex-direction: column;
 }
-
-#map {
-  height: 100%;
-
-  @media only screen and (max-width: 800px) {
-    height: 360px;
-  }
+#header {
+  flex-shrink: 0;
 }
-
-#content {
-  background-color: var(--var-color-scrub);
-  height: 100%;
-
-  @media only screen and (min-width: 800px) {
-    overflow-x: hidden;
-    overflow-y: auto;
-    position: relative;
-  }
+#main {
+  flex: 1 1 auto;
 }
-
 #footer {
   flex-shrink: 0;
+  padding: var(--var-spacing-4);
 }

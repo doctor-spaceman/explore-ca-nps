@@ -15,13 +15,28 @@
     </script>
     <script src="././components/component-overlay.js" type="module"></script>
     <script src="././components/component-grid.js" type="module"></script>
+    <script src="././components/component-actions.js" type="module"></script>
+    <script src="././components/component-info-drawer.js" type="module"></script>
     <link type="text/css" rel="stylesheet" href="././assets/css/style.css"></link>
     <link href="https://fonts.googleapis.com/css2?family=Vollkorn&family=Rubik&display=swap" rel="stylesheet">
   </head>
-  <body>
-    <parks-overlay></parks-overlay>
-    <a href="#parksContent" id="skipToContent" class="sr-only">Skip to content</a>
-    <parks-grid></parks-grid>
+  <body class="bg-sand">
+    <header id="header">
+      <a href="#parksContent" id="skipToContent" class="sr-only">Skip to content</a>
+    </header>
+    <main id="main" class="flex flex-column flex-nowrap">
+      <parks-grid></parks-grid>
+      <parks-info-drawer></parks-info-drawer>
+      <parks-overlay></parks-overlay>
+    </main>
+    <footer id="footer" class="flex flex-justify-space-between c-white bg-olive">
+      <p class="p3">
+        Created by <a href="https://github.com/doctor-spaceman/explore-ca-nps" target="_blank" rel="noopener">Matt McLean</a>
+      </p>
+      <p class="p3">
+        Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a>
+      </p>
+    </footer>
     <noscript>
       <p>This app requires Javascript.</p>
     </noscript>
