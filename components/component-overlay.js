@@ -1,7 +1,9 @@
 import { LitElement, css, html, nothing, when } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/all/lit-all.min.js';
+import { structure, theme } from '../assets/js/styles.js';
 
 class ParksOverlay extends LitElement {
   static properties = {
+    appOK: { type: Boolean },
     show: { type: Boolean },
   }
 
@@ -10,16 +12,19 @@ class ParksOverlay extends LitElement {
 
     this.show = true;
     this.appOK = true;
+
     document.addEventListener('parks:data-ready', (event) => {
-      console.log('parks:data-ready event received in overlay');
-      if (event.detail.length) this.show = false;
+      if (event.detail.length) {
+        this.show = false;
+        this.appOK = true;
+      }
     });
 
-    document.addEventListener('parks:data-not-ready', (event) => {
-      console.log('parks:data-ready event received in overlay');
-      if (event.detail.length) this.appOK = false;
+    document.addEventListener('parks:data-not-ready', () => {
+      this.appOK = false;
     });
   }
+
   connectedCallback() {
     super.connectedCallback();
   }
@@ -67,17 +72,21 @@ class ParksOverlay extends LitElement {
     `
   }
 
-  static styles = css`
-    #loadOverlay {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-      transition: all 1s ease;
-      z-index: 100;
-    }
-    .load-container {
-      margin-top: 30vh;
-    }
-  `
+  static styles = [
+    structure,
+    theme,
+    css`
+      #loadOverlay {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        transition: all 1s ease;
+        z-index: 100;
+      }
+      .load-container {
+        margin-top: 30vh;
+      }
+    `
+  ]
 }
 customElements.define('parks-overlay', ParksOverlay);

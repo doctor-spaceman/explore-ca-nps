@@ -27,8 +27,3 @@ button.bg-green {
 button.card {
   min-height: 0px;
 }
-
-#backButton:before {
-  display: inline;
-  content: '<< ';
-}

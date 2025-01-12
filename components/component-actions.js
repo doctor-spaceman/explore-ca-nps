@@ -1,29 +1,44 @@
-import { LitElement, css, html } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/core/lit-core.min.js';
-import { structure, theme, typography } from '../assets/js/styles.js';
+import { LitElement, createRef, css, html, ref } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/all/lit-all.min.js';
+import { structure, theme, utilities } from '../assets/js/styles.js';
+import { debounce } from '../assets/js/utils.js';
 
 class ParksActions extends LitElement {
+  static properties = {
+    parksCount: {
+      type: Number,
+      attribute: 'parks-count',
+    },
+    searchTerm: {
+      type: String
+    },
+  }
+
   constructor() {
     super();
-    this.parksCount = 0;
+    this.searchInputRef = createRef();
 
     document.addEventListener('parks:data-ready', (event) => {
-      console.log('parks:data-ready event received in actions');
-      this.parksCount = event.detail.length;
+      console.log('actions OK')
     });
   }
 
-  _getRandomPark (min, max) {
-    console.log('Offer the user a random park from the list.')
-    /*
+  connectedCallback() {
+    super.connectedCallback();
+    console.log(`parks count: ${this.parksCount}`);
+  }
+
+  _getRandomPark = (min, max) => {
     let result = Math.floor(Math.random() * (max - min) + min);
-    console.log('Park Index: ' + result);
-    this.randomPark = this.parks[result];
+    document.dispatchEvent(new CustomEvent('parks:parks-random', {
+      detail: { park_index: result }
+    }));
+  }
 
-    let randomParkCode = this.randomPark.parkCode;
-
-    // Check parks alert data for our park code
-    this._selectLocation(randomParkCode,this.map,this.randomPark.latitude,this.randomPark.longitude);
-    */
+  _getSearchTerm = () => {
+    this.searchTerm = this.searchInputRef.value?.value;
+    document.dispatchEvent(new CustomEvent('parks:parks-searched', {
+      detail: { search_term: this.searchTerm }
+    }));
   }
 
   render() {
@@ -32,17 +47,23 @@ class ParksActions extends LitElement {
         <div class="parks-actions__randomizer">
           <button
             class="bg-sand c-green"
-            @click=${this._getRandomPark(0, this.parksCount)}
+            @click=${() => this._getRandomPark(0, this.parksCount)}
           >
             Random Park
           </button>
         </div>
         <div class="park-actions__search">
-          <label for="search" class="screen-reader-text">
+          <label for="search" class="sr-only">
             Search Parks
           </label>
-          <input id="search" type="text" v-model="search" placeholder="Search Parks" />
-          <span class="search__underscore"></span>
+          <input
+            ${ref(this.searchInputRef)}
+            id="search"
+            type="text"
+            placeholder="Search Parks"
+            @input=${debounce(this._getSearchTerm, 500)}
+          />
+          <span class="park-actions__search-underline"></span>
         </div>
       </div>
     `
@@ -51,7 +72,7 @@ class ParksActions extends LitElement {
   static styles = [
     structure,
     theme,
-    typography,
+    utilities,
     css`
       :host {
         display: block;
@@ -61,17 +82,55 @@ class ParksActions extends LitElement {
         padding: var(--var-spacing-4);
       }
       .parks-actions__randomizer {
-        width: 33%;
+        flex: 0 0 calc(33% - var(--var-spacing-2));
+
+        button {
+          border: none;
+          border-image: none;
+          border-radius: var(--var-spacing);
+          box-sizing: border-box;
+          cursor: pointer;
+          font: var(--var-font-p);
+          font-family: var(--var-font-heading);
+          padding: var(--var-spacing-4);
+          width: 100%;
+        }
       }
-      button {
-        border: none;
-        border-image: none;
-        border-radius: var(--var-spacing);
-        box-sizing: border-box;
-        font: var(--var-font-p);
-        font-family: var(--var-font-heading);
-        padding: var(--var-spacing-4);
+      .park-actions__search {
+        overflow: hidden;
+        position: relative;
         width: 100%;
+
+        .park-actions__search-underline {
+          display: block;
+          background-color: var(--var-color-sage);
+          height: 2px;
+          width: 100%;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          transform: translateX(-100%);
+          transition: transform .2s ease;
+        }
+        #search {
+          background: url('./assets/img/icon__search--white.svg') left center/28px no-repeat;
+          border: 0;
+          box-sizing: border-box;
+          color: var(--var-color-white);
+          font: var(--var-font-p-large);
+          height: 100%;
+          outline: none;
+          padding: 8px 0px 8px 34px;
+        }
+        #search::placeholder {
+          color: rgba(255, 255, 255, .6);
+        }
+        #search:focus {
+          outline: 1px dotted transparent;
+        }
+        #search:focus + .park-actions__search-underline {
+          transform: translateX(0%);
+        }
       }
     `
   ]

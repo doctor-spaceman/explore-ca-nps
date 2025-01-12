@@ -1,12 +1,11 @@
-import { LitElement, css, html, nothing, repeat, when } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/all/lit-all.min.js';
+import { LitElement, css, html, repeat, when } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/all/lit-all.min.js';
 import { APP_API_KEY_NPS, APP_API_KEY_WEATHER } from '../assets/js/_keys.js';
 import { structure, theme, typography } from '../assets/js/styles.js';
+import { getLocalStorageWithExpiry, setLocalStorageWithExpiry } from '../assets/js/utils.js';
 
 class ParksGrid extends LitElement {
   static properties = {
-    appOk: { type: Boolean },
     alerts: [],
-    getStorageWithExpiry: { type: String },
     parks: { type: Array },
     parkAlerts: { type: Array },
     parkWeather: { type: Array },
@@ -16,7 +15,19 @@ class ParksGrid extends LitElement {
     currentPark:  {type: Object},
     randomPark: {type: Object},
     mapMarkers: { type: Array },
-    search: { type: String },
+    searchTerm: { type: String },
+  }
+
+  get filteredParks() {
+    return this.parks?.filter(park => {
+      return park.fullName.toLowerCase().includes(
+        this.searchTerm.toLowerCase()
+      );
+    });
+  }
+
+  get parkOnLoad() {
+    return this.parks?.find((park) => `#${park.parkCode}` === window.location.hash)
   }
 
   constructor() {
@@ -24,65 +35,50 @@ class ParksGrid extends LitElement {
 
     this.isOpen = false;
     this.parks = [];
+    this.parkAlerts = [];
+    this.parkWeather = [];
+    this.searchTerm = '';
   }
 
   async connectedCallback() {
     super.connectedCallback();
 
     await this.updateComplete;
+    // TODO: When user goes back/forward, check if a park should be selected
+    // window.addEventListener('popstate', (event) => {
+    //   console.log('popstate')
+    //   console.log(event)
+    //   if (this.parkOnLoad) {
+    //     this._selectLocation(
+    //       this.parkOnLoad.parkCode,
+    //       this.parkOnLoad.latitude,
+    //       this.parkOnLoad.longitude,
+    //     )
+    //   }
+    // })
     document.addEventListener('parks:data-ready', () => {
       const $map = this.renderRoot.getElementById('map');
       if (this.parks?.length) this._initMap($map);
     })
+    document.addEventListener('parks:parks-searched', (event) => {
+      this.searchTerm = event.detail.search_term;
+    })
+    document.addEventListener('parks:parks-random', (event) => {
+      this._setRandomPark(event);
+    })
+    document.addEventListener('parks:info-drawer-closed', () => {
+      this._zoomToBounds(this.map, this.mapBounds, this.mapMarkers);
+    })
+    
 
     this._getParks();
     this._getParkAlerts();
   }
 
-  _formatTimestamp(timestamp) {
-    const msTimestamp = timestamp * 1000;
-    const dateObj = new Date(msTimestamp)
-    const dateFormat = dateObj.toLocaleString('en-US', {month: 'long', day: 'numeric'});
-    return dateFormat;
-  }
-
-  _setStorageWithExpiry(key, value, ttl) {
-    const now = new Date();
-
-    // `item` is an object which contains the original value
-    // as well as the time when it's supposed to expire
-    const item = {
-      value: value,
-      expiry: now.getTime() + ttl
-    };
-    localStorage.setItem(key, JSON.stringify(item));
-  }
-
-  _getStorageWithExpiry(key) {
-    const itemStr = localStorage.getItem(key);
-    
-    // if the item doesn't exist, return null
-    if ( !itemStr ) {
-      return null;
-    }
-
-    // compare the expiry time of the item with the current time
-    const item = JSON.parse(itemStr);
-    const now = new Date();
-
-    if ( now.getTime() > item.expiry ) {
-      // If the item is expired, delete the item from storage
-      // and return null
-      localStorage.removeItem(key);
-      return null;
-    }
-    return item.value;
-  }
-
   async _getParks() {
-    if (this._getStorageWithExpiry('parks')) {
+    if (getLocalStorageWithExpiry('parks')) {
       // Retrieve parks data from localStorage
-      let storedParksData = this._getStorageWithExpiry('parks');
+      let storedParksData = getLocalStorageWithExpiry('parks');
       console.log('Parks data retrieved from localStorage');
       console.log(storedParksData.data);
       // Store parks data in this instance
@@ -108,10 +104,9 @@ class ParksGrid extends LitElement {
         try {
           console.log('Parks data retrieved from API');
           console.log(parksData.data);
-          // Store parks data in this instance
           this.parks = parksData.data;
           // Store parks data in localStorage with 7d expiry
-          this._setStorageWithExpiry('parks', parksData, 604800000);
+          setLocalStorageWithExpiry('parks', parksData, 604800000);
           document.dispatchEvent(new CustomEvent('parks:data-ready', {
             detail: parksData.data
           }));
@@ -123,79 +118,87 @@ class ParksGrid extends LitElement {
     }
   }
 
-  async _getParkAlerts() {
-    // When park alerts data is not in local storage
-    if ( !this._getStorageWithExpiry('alerts') ) {
-      let response = await fetch(`https://developer.nps.gov/api/v1/alerts?stateCode=CA&limit=500&api_key=${APP_API_KEY_NPS}`);
-      let data;
-
-      if (response?.status >= 200 && response?.status <= 299) {
-        data = await response.json();
-      } else {
-        throw Error(response.statusText);
-      }
-      
-      if (data) { 
-        try {
-          console.log('Parks alert data retrieved from API');
-          console.log(data.data);
-          // Store parks alert data in this instance
-          this.alerts = data.data;
-          // Store parks alert data in localStorage with 2h expiry
-          this._setStorageWithExpiry('alerts', data, 7200000);
-        } catch(error) {
-          console.warn("Error retrieving alerts data from parks API");
-          console.log(error.name + ': ' + error.message);
+  async _getParkAlerts(identifier) {
+    if (identifier) {
+      if (this.parkAlerts.length) {
+        let alerts = [];
+        for (const alert of this.alerts) {
+          if ( alert.parkCode === identifier ) alerts.push(alert);
         }
+        this.parkAlerts = alerts;
       }
     } else {
-      console.log('Parks alert data retrieved from localStorage');
-      // Retrieve parks data from localStorage
-      let alertsData = this._getStorageWithExpiry('alerts');
-      console.log(alertsData.data);
-      // Store parks data in this instance
-      this.alerts = alertsData.data;
+      // When park alerts data is not in local storage
+      if ( !getLocalStorageWithExpiry('alerts') ) {
+        let response = await fetch(`https://developer.nps.gov/api/v1/alerts?stateCode=CA&limit=500&api_key=${APP_API_KEY_NPS}`);
+        let data;
+
+        if (response?.status >= 200 && response?.status <= 299) {
+          data = await response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+        
+        if (data) { 
+          try {
+            this.alerts = data.data;
+            // Store parks alert data in localStorage with 2h expiry
+            setLocalStorageWithExpiry('alerts', data, 7200000);
+          } catch(error) {
+            console.warn("Error retrieving alerts data from parks API");
+            console.log(error.name + ': ' + error.message);
+          }
+        }
+      } else {
+        // Retrieve parks data from localStorage
+        let alertsData = getLocalStorageWithExpiry('alerts');
+        this.alerts = alertsData.data;
+      }
     }
   }
 
-  _getParkWeather(code, lat, lng) {
+  async _getParkWeather(identifier, lat, lng) {
+    let response;
+    let data;
+
     if ( this.parkWeather.length ) {
       this.parkWeather = [];
     }
-    if ( !this._getStorageWithExpiry(`weather_${code}`) ) {
+    if ( !getLocalStorageWithExpiry(`weather_${identifier}`) ) {
       if ( lat !== '' && lng !== '' ) {
-        fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&units=imperial&
-        exclude=current,minutely,hourly&appid=${APP_API_KEY_WEATHER}`)
-        .then(response => { 
-          if ( response.status >= 200 && response.status <= 299 ) {
-            return response.json();
-          } else {
-            throw Error(response.statusText);
+        response = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lng}&units=imperial&exclude=current,minutely,hourly&appid=${APP_API_KEY_WEATHER}`);
+        if ( response.status >= 200 && response.status <= 299 ) {
+          data = await response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+        if (data) {
+          try {
+            let weatherData = data.daily;
+            // Build a request URL for the weather condition icons
+            for (const day of weatherData) {
+              day.weather[0].iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+            }
+    
+            // Store park weather data in this instance
+            this.parkWeather = weatherData;
+            // Store park weather data in local storage with 2h expiry
+            setLocalStorageWithExpiry(`weather_${identifier}`, weatherData, 7200000);
+          } catch(error) {
+            console.warn("Error retrieving conditions from weather API");
+            console.log(error.name + ': ' + error.message);
           }
-        })
-        .then(data => { 
-          let weatherData = data.daily;
-          // Build a request URL for the weather condition icons
-          weatherData.forEach(day => {
-            day.weather[0].iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
-          });
-  
-          // Store park weather data in this instance
-          this.parkWeather = weatherData;
-          // Store park weather data in local storage with 2h expiry
-          this._setStorageWithExpiry(`weather_${code}`, weatherData, 7200000);
-        })
-        .catch(error => { console.log(error); })
+        }
       } else {
         this.parkWeather = [];
       }
     } else {
       // Retrieve park weather data from local storage
-      let weatherData = this._getStorageWithExpiry(`weather_${code}`);
+      let weatherData = getLocalStorageWithExpiry(`weather_${identifier}`);
       // Build a request URL for the weather condition icons
-      weatherData.forEach(day => {
+      for (const day of weatherData) {
         day.weather[0].iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
-      });
+      }
 
       // Store park weather data in this instance
       this.parkWeather = weatherData;
@@ -218,19 +221,16 @@ class ParksGrid extends LitElement {
   }
 
   async _addLocations (map) {
-    console.log('Adding locations...');
     const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
     let markers = [];
-    
-    // Set bounds
     let bounds = new google.maps.LatLngBounds();
 
     for (const park of this.parks) {
       const latitude = Number(park.latitude);
       const longitude = Number(park.longitude);
       
-      // If parks don't have coordinates, and or their coordinates are 
+      // TODO: If parks don't have coordinates, or their coordinates are 
       // outside of California, give that park new coords inside of California.
 
       if ( latitude && longitude ) {
@@ -249,22 +249,26 @@ class ParksGrid extends LitElement {
         });
         markers.push(marker);
 
-        // What happens when a marker is clicked
-        google.maps.event.addListener(marker, 'click', function() {
-          // Open info pane
-          this._selectLocation(park.parkCode, map, park.latitude, park.longitude);
+        google.maps.event.addListener(marker, 'click', () => {
+          this._selectLocation(park.parkCode, park.latitude, park.longitude);
         });
 
-        // Set marker to bounds
-        bounds.extend(marker.position);
+        bounds.extend(marker.position); // Set marker to bounds
       }
     }
       
-    // Store the bounds
-    this.mapBounds = bounds;
+    this.mapBounds = bounds; // Store the bounds
+    this._zoomToBounds(map, bounds); // Zoom the map to bounds
 
-    // Zoom the map to bounds
-    this._zoomToBounds(map, bounds); 
+    // Once the page has loaded and the map is ready, check
+    // if there's already a park that needs to be selected.
+    if (this.parkOnLoad) {
+      this._selectLocation(
+        this.parkOnLoad.parkCode,
+        this.parkOnLoad.latitude,
+        this.parkOnLoad.longitude,
+      )
+    }
   }
 
   _zoomMap (map, lat, lng) {
@@ -283,45 +287,35 @@ class ParksGrid extends LitElement {
     map.fitBounds(bounds);
   }
 
-  _selectLocation (code, map, lat, lng) {
-    this._setCurrentPark(code);
-    this._zoomMap(map,lat,lng);
-    this._openInfoPane();
-    this._getParkAlerts(code);
-    this._getParkWeather(code, lat, lng);
-  }
+  _selectLocation (identifier, lat, lng) {
+    console.log('location selected')
+    this._setCurrentPark(identifier);
+    this._zoomMap(this.map, lat, lng);
+    this._getParkAlerts(identifier);
+    this._getParkWeather(identifier, lat, lng);
 
-  _openInfoPane () {
-    this.isOpen = true;
-    window.location.href = `#content`;
-  }
-
-  _closeInfoPane (code) {
-    this.isOpen = false;
-    this._zoomToBounds(this.map, this.mapBounds, this.mapMarkers); 
-    window.location.href = `#${code}`;
-  }
-
-  _setCurrentPark(code) {
-    let matchedPark;
-
-    this.parks.forEach(park => {
-      if ( park.parkCode === code ) {
-        matchedPark = park;
+    document.dispatchEvent(new CustomEvent('parks:park-selected', {
+      detail: {
+        selected_park: this.currentPark,
+        selected_park_alerts: this.parkAlerts,
+        selected_park_weather: this.parkWeather
       }
-    });
-    this.currentPark = matchedPark;
+    }));
+  }
+
+  _setCurrentPark (identifier) {
+    for (const park of this.parks) {
+      if (park.parkCode === identifier) this.currentPark = park;
+    }
   }
   
-  _getRandomPark (min, max) {
-    let result = Math.floor(Math.random() * (max - min) + min);
-    console.log('Park Index: ' + result);
-    this.randomPark = this.parks[result];
-
-    let randomParkCode = this.randomPark.parkCode;
-
-    // Check parks alert data for our park code
-    this._selectLocation(randomParkCode,this.map,this.randomPark.latitude,this.randomPark.longitude);
+  _setRandomPark (event) {
+    this.randomPark = this.parks[event.detail.park_index]
+    this._selectLocation(
+      this.randomPark.parkCode,
+      this.randomPark.latitude,
+      this.randomPark.longitude
+    );
   }
 
   render() {
@@ -346,39 +340,32 @@ class ParksGrid extends LitElement {
                 Whether you're looking to collect a few more stamps for your National Parks passport booklet, or just interested in California's parks, monuments and historical sites, use this app to explore the parts of California that have been protected for all to enjoy.
               </p>
             </div>
-            <parks-actions></parks-actions>
+            <parks-actions parks-count=${this.parks.length}></parks-actions>
           </div>
-          ${when(this.parks.length,
+          ${when(this.filteredParks.length,
             () => html`
-              <ul id="parksList" class="grid" data-show="searchFilteredParks.length">
-                 ${repeat(
-                  this.parks, (park) => park.parkCode, (park, index) => html`
-                    <li
-                      class="card bg-sand c-green"
-                    >
-                      ${park.fullName}
-                    </li>
-                  `
-                )}
-                <!--<li class="col-1-3 card green bg-sand"
-                tabindex="0" 
-                :id="park.parkCode" 
-                :aria-label="park.fullName" 
-                v-for="park in searchFilteredParks" 
-                :key="park.id" 
-                @click="_selectLocation(park.parkCode, map, park.latitude, park.longitude);" 
-                @keydown.enter="_selectLocation(park.parkCode, map, park.latitude, park.longitude)">
-                  {{ park.fullName }}
-                </li>-->
+              <ul id="parksList" class="grid">
+                ${repeat(this.filteredParks, (park) => park.parkCode, (park, index) => html`
+                  <li
+                    aria-label="View ${park.fullName}"
+                    class="card bg-sand c-green"
+                    tabindex="0"
+                    @click=${() => this._selectLocation(park.parkCode, park.latitude, park.longitude)}
+                    @keydown=${(e) => {
+                      if (e.key === 'Enter') this._selectLocation(park.parkCode, park.latitude, park.longitude)
+                    }}
+                  >
+                    ${park.fullName}
+                  </li>
+                `)}
               </ul>
             `,
-            () => nothing,
+            () => html`
+              <div id="listError" class="flex flex-column flex-center">
+                <p class="white">Sorry, there are no results for that search term.</p>
+              </div>
+            `,
           )}
-          
-           
-          <div id="listError" class="grid grid--column grid--center content--1x" v-show="!searchFilteredParks.length">
-            <p class="white">Sorry, there are no results for that search term.</p>
-          </div>
         </div>
       </section>
     `;
