@@ -1,6 +1,7 @@
 body {
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 #header {
   flex-shrink: 0;

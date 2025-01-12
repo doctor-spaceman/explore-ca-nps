@@ -120,13 +120,12 @@ class ParksGrid extends LitElement {
 
   async _getParkAlerts(identifier) {
     if (identifier) {
-      if (this.parkAlerts.length) {
-        let alerts = [];
-        for (const alert of this.alerts) {
-          if ( alert.parkCode === identifier ) alerts.push(alert);
+      let alerts = [];
+      for (const alert of this.alerts) {
+      if ( alert.parkCode === identifier ) alerts.push(alert);
         }
-        this.parkAlerts = alerts;
-      }
+      this.parkAlerts = alerts;
+      console.log(this.parkAlerts);
     } else {
       // When park alerts data is not in local storage
       if ( !getLocalStorageWithExpiry('alerts') ) {
@@ -142,6 +141,7 @@ class ParksGrid extends LitElement {
         if (data) { 
           try {
             this.alerts = data.data;
+            console.log(this.alerts);
             // Store parks alert data in localStorage with 2h expiry
             setLocalStorageWithExpiry('alerts', data, 7200000);
           } catch(error) {
@@ -153,6 +153,7 @@ class ParksGrid extends LitElement {
         // Retrieve parks data from localStorage
         let alertsData = getLocalStorageWithExpiry('alerts');
         this.alerts = alertsData.data;
+        console.log(this.alerts);
       }
     }
   }
@@ -422,7 +423,7 @@ class ParksGrid extends LitElement {
         padding: var(--var-spacing-4);
       }
       .card {
-        border-radius: 4px;
+        border-radius: var(--var-spacing);
         box-sizing: border-box;
         cursor: pointer;
         font: var(--var-font-p);

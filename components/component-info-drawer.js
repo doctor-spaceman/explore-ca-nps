@@ -1,5 +1,5 @@
 import { LitElement, css, html, nothing, repeat, when } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/all/lit-all.min.js';
-import { structure, theme } from '../assets/js/styles.js';
+import { structure, theme, typography } from '../assets/js/styles.js';
 import { formatTimestamp } from '../assets/js/utils.js';
 
 class ParksInfoDrawer extends LitElement {
@@ -53,7 +53,7 @@ class ParksInfoDrawer extends LitElement {
             <div class="info-content">
               <button
                 id="backButton"
-                class="white bg-green"
+                class="bg-green c-white"
                 @click=${this._closeInfoDrawer}
               >
                 Back
@@ -64,7 +64,7 @@ class ParksInfoDrawer extends LitElement {
                 </h2>
               </div>
               <p>${this.currentPark.description}</p>
-              <section class="info-content__weather">
+              <section id="weather">
                 <h3>Weather</h3>
                 <p class="weather__description">
                   ${this.currentPark.weatherInfo}
@@ -97,7 +97,7 @@ class ParksInfoDrawer extends LitElement {
                   `,
                 )}
               </section>
-              <section>
+              <section id="access">
                 <h3>Access</h3>
                 <p>${this.currentPark.operatingHours[0].description}</p>
                 <h3>Alerts</h3>
@@ -106,13 +106,13 @@ class ParksInfoDrawer extends LitElement {
                     <ul>
                       ${repeat(this.currentParkAlerts, (alert) => alert.id, (alert, index) => html`
                         <li>
-                          <h4>${alert.title}</h4>
+                          <span>${alert.title}</span>
                           <div class="flex flex-nowrap">
                             <a
                               href="${alert.url}"
                               target="_blank"
                               rel="noopener"
-                              class="has-icon font__size--small"
+                              class="has-icon p4 c-teal"
                             >
                               More Information<span class="icon__link-external icon__link-external--info" aria-label="External link opens a new tab"></span>
                             </a>
@@ -139,10 +139,21 @@ class ParksInfoDrawer extends LitElement {
   static styles = [
     structure,
     theme,
+    typography,
     css`
+      #backButton {
+        border: none;
+        border-image: none;
+        border-radius: var(--var-spacing);
+        box-sizing: border-box;
+        cursor: pointer;
+        font: var(--var-font-p);
+        font-family: var(--var-font-heading);
+        padding: var(--var-spacing) var(--var-spacing-4);
+      }
       #backButton:before {
-        display: inline;
         content: '<< ';
+        display: inline;
       }
       #infoDrawer {
         box-sizing: border-box;
@@ -207,6 +218,28 @@ class ParksInfoDrawer extends LitElement {
       .weather-item__icon {
         height: 50px;
         width: 50px;
+      }
+      #access li {
+        margin-bottom: var(--var-spacing-4);
+      }
+      a.has-icon:hover {
+        .icon__link-external--info {
+          background-image: url('./assets/img/icon__link-external--green.svg');
+        }
+      }
+      .icon__link-external {
+        display: inline-block;
+        height: .9em;
+      }
+      .icon__link-external--heading {
+        background: url('./assets/img/icon__link-external--green.svg') left center/contain no-repeat;
+        margin-left: .5em;
+        width: .6em;
+      }
+      .icon__link-external--info {
+        background: url('./assets/img/icon__link-external--teal.svg') left top/contain no-repeat;
+        margin-left: .2em;
+        width: .8em;
       }
     `
   ];
