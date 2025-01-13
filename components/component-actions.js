@@ -16,15 +16,10 @@ class ParksActions extends LitElement {
   constructor() {
     super();
     this.searchInputRef = createRef();
-
-    document.addEventListener('parks:data-ready', (event) => {
-      console.log('actions OK')
-    });
   }
 
   connectedCallback() {
     super.connectedCallback();
-    console.log(`parks count: ${this.parksCount}`);
   }
 
   _getRandomPark = (min, max) => {
@@ -46,6 +41,7 @@ class ParksActions extends LitElement {
       <div class="parks-actions flex flex-nowrap bg-faded-olive">
         <div class="parks-actions__randomizer">
           <button
+            aria-label="Load a random park from the list."
             class="bg-sand c-green"
             @click=${() => this._getRandomPark(0, this.parksCount)}
           >
@@ -92,8 +88,13 @@ class ParksActions extends LitElement {
           cursor: pointer;
           font: var(--var-font-p);
           font-family: var(--var-font-heading);
+          opacity: 1;
           padding: var(--var-spacing-4);
           width: 100%;
+        }
+        button:hover,
+        button:focus {
+          opacity: .9;
         }
       }
       .park-actions__search {

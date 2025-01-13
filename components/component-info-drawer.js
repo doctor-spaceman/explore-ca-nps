@@ -23,9 +23,11 @@ class ParksInfoDrawer extends LitElement {
     super.connectedCallback();
 
     document.addEventListener('parks:park-selected', (event) => {
+      console.log(event.detail.selected_park_weather)
       this.currentPark = event.detail.selected_park;
       this.currentParkAlerts = event.detail.selected_park_alerts;
       this.currentParkWeather = event.detail.selected_park_weather;
+      console.log(event.detail.selected_park_weather)
       this._openInfoDrawer();
     })
   }
@@ -49,6 +51,10 @@ class ParksInfoDrawer extends LitElement {
           <article
             id="infoDrawer"
             class="${this.active ? 'active' : ''} bg-sand"
+            ?aria-hidden=${!this.active}
+            aria-labelledby="infoDrawerTitle"
+            role="dialog"
+            tabindex=${this.active ? '0' : nothing}
           >
             <div class="info-content">
               <button
@@ -59,8 +65,19 @@ class ParksInfoDrawer extends LitElement {
                 Back
               </button>
               <div class="flex flex-nowrap">
-                <h2>
-                  ${this.currentPark.fullName}<a class="icon__link-external icon__link-external--heading" href="${this.currentPark.url}" target="_blank" rel="noopener" aria-label="Visit Website" title="Visit Website"></a>
+                <h2
+                  id="infoDrawerTitle"
+                  class="flex flex-center"
+                >
+                  ${this.currentPark.fullName}
+                  <a
+                    aria-label="Visit this park's website (opens in a new tab)."
+                    class="icon__link-external icon__link-external--heading"
+                    href="${this.currentPark.url}"
+                    target="_blank"
+                    rel="noopener"
+                    title="Visit Website">
+                  </a>
                 </h2>
               </div>
               <p>${this.currentPark.description}</p>
@@ -73,7 +90,7 @@ class ParksInfoDrawer extends LitElement {
                   () => html`
                     <ul class="weather__forecast flex flex-justify-space-between">
                       ${repeat(this.currentParkWeather, (day) => day.dt, (day, index) => html`
-                        <li class="weather-item flex flex-column flex-center">
+                        <li class="weather-item p4 flex flex-column flex-center">
                           <img
                             class="weather-item__icon"
                             src="${day.weather[0].iconUrl}"
@@ -91,7 +108,10 @@ class ParksInfoDrawer extends LitElement {
                     </ul>
                   `,
                   () => html`
-                    <div class=""weather__forecast">
+                    <div
+                      class="weather__forecast p3"
+                      role="status"
+                    >
                       The weather forecast is not available at this time. Please try again later.
                     </div>
                   `,
@@ -104,25 +124,30 @@ class ParksInfoDrawer extends LitElement {
                 ${when(this.currentParkAlerts.length,
                   () => html`
                     <ul>
-                      ${repeat(this.currentParkAlerts, (alert) => alert.id, (alert, index) => html`
-                        <li>
-                          <span>${alert.title}</span>
-                          <div class="flex flex-nowrap">
+                      ${repeat(this.currentParkAlerts,
+                        (alert) => alert.id,
+                        (alert, index) => html`
+                          <li class="alert-item">
+                            <span>${alert.title}</span>
                             <a
                               href="${alert.url}"
                               target="_blank"
                               rel="noopener"
-                              class="has-icon p4 c-teal"
+                              class="has-icon flex flex-center c-teal p3"
                             >
-                              More Information<span class="icon__link-external icon__link-external--info" aria-label="External link opens a new tab"></span>
+                              More Information
+                              <span class="icon__link-external icon__link-external--info" aria-label="Link opens in a new tab."></span>
                             </a>
-                          </div>
-                        </li>
-                      `)}
+                          </li>
+                        `
+                      )}
                     </ul>
                   `,
                   () => html`
-                    <div>
+                    <div
+                      class="p3"
+                      role="status"
+                    >
                       Park alerts are not available at this time. Please visit the <a href="${this.currentPark.url}">park's website</a> for up-to-date information on park conditions, or try again later.
                     </div>
                   `,
@@ -198,12 +223,11 @@ class ParksInfoDrawer extends LitElement {
       .weather__forecast {
         background: var(--var-color-sand);
         border-radius: 8px;
-        font-family: var(--var-font--heading);
-        font-size: .7em;
         list-style: none;
         padding: 16px 16px 0px 16px;
       }
       .weather-item {
+        font-family: var(--var-font-heading);
         padding: 0px 4px 16px 4px;
         text-align: center;
         width: calc(25% - 16px);
@@ -222,7 +246,11 @@ class ParksInfoDrawer extends LitElement {
       #access li {
         margin-bottom: var(--var-spacing-4);
       }
-      a.has-icon:hover {
+      .alert-item a.has-icon {
+        font-family: var(--var-font-heading);
+        margin-top: var(--var-spacing);
+      }
+      .alert-item a.has-icon:hover {
         .icon__link-external--info {
           background-image: url('./assets/img/icon__link-external--green.svg');
         }

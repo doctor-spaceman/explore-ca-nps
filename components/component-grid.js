@@ -5,11 +5,10 @@ import { getLocalStorageWithExpiry, setLocalStorageWithExpiry } from '../assets/
 
 class ParksGrid extends LitElement {
   static properties = {
-    alerts: [],
+    alerts: { type: Array },
     parks: { type: Array },
     parkAlerts: { type: Array },
     parkWeather: { type: Array },
-    isOpen: {type: Boolean },
     map: {type: Object},
     mapBounds: {type: Object},
     currentPark:  {type: Object},
@@ -33,7 +32,7 @@ class ParksGrid extends LitElement {
   constructor() {
     super();
 
-    this.isOpen = false;
+    this.alerts = [];
     this.parks = [];
     this.parkAlerts = [];
     this.parkWeather = [];
@@ -69,7 +68,6 @@ class ParksGrid extends LitElement {
     document.addEventListener('parks:info-drawer-closed', () => {
       this._zoomToBounds(this.map, this.mapBounds, this.mapMarkers);
     })
-    
 
     this._getParks();
     this._getParkAlerts();
@@ -79,8 +77,7 @@ class ParksGrid extends LitElement {
     if (getLocalStorageWithExpiry('parks')) {
       // Retrieve parks data from localStorage
       let storedParksData = getLocalStorageWithExpiry('parks');
-      console.log('Parks data retrieved from localStorage');
-      console.log(storedParksData.data);
+
       // Store parks data in this instance
       this.parks = storedParksData.data;
       document.dispatchEvent(new CustomEvent('parks:data-ready', {
@@ -102,11 +99,11 @@ class ParksGrid extends LitElement {
       
       if (parksData) { 
         try {
-          console.log('Parks data retrieved from API');
-          console.log(parksData.data);
           this.parks = parksData.data;
+
           // Store parks data in localStorage with 7d expiry
           setLocalStorageWithExpiry('parks', parksData, 604800000);
+
           document.dispatchEvent(new CustomEvent('parks:data-ready', {
             detail: parksData.data
           }));
@@ -122,10 +119,9 @@ class ParksGrid extends LitElement {
     if (identifier) {
       let alerts = [];
       for (const alert of this.alerts) {
-      if ( alert.parkCode === identifier ) alerts.push(alert);
-        }
+        if (alert.parkCode === identifier ) alerts.push(alert);
+      }
       this.parkAlerts = alerts;
-      console.log(this.parkAlerts);
     } else {
       // When park alerts data is not in local storage
       if ( !getLocalStorageWithExpiry('alerts') ) {
@@ -141,7 +137,7 @@ class ParksGrid extends LitElement {
         if (data) { 
           try {
             this.alerts = data.data;
-            console.log(this.alerts);
+
             // Store parks alert data in localStorage with 2h expiry
             setLocalStorageWithExpiry('alerts', data, 7200000);
           } catch(error) {
@@ -153,7 +149,6 @@ class ParksGrid extends LitElement {
         // Retrieve parks data from localStorage
         let alertsData = getLocalStorageWithExpiry('alerts');
         this.alerts = alertsData.data;
-        console.log(this.alerts);
       }
     }
   }
@@ -162,13 +157,11 @@ class ParksGrid extends LitElement {
     let response;
     let data;
 
-    if ( this.parkWeather.length ) {
-      this.parkWeather = [];
-    }
-    if ( !getLocalStorageWithExpiry(`weather_${identifier}`) ) {
-      if ( lat !== '' && lng !== '' ) {
+    console.log(`${identifier}, ${lat}, ${lng}`)
+    if (!getLocalStorageWithExpiry(`weather_${identifier}`)) {
+      if (lat.length && lng.length ) {
         response = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lng}&units=imperial&exclude=current,minutely,hourly&appid=${APP_API_KEY_WEATHER}`);
-        if ( response.status >= 200 && response.status <= 299 ) {
+        if (response.status >= 200 && response.status <= 299) {
           data = await response.json();
         } else {
           throw Error(response.statusText);
@@ -183,6 +176,8 @@ class ParksGrid extends LitElement {
     
             // Store park weather data in this instance
             this.parkWeather = weatherData;
+
+
             // Store park weather data in local storage with 2h expiry
             setLocalStorageWithExpiry(`weather_${identifier}`, weatherData, 7200000);
           } catch(error) {
@@ -190,12 +185,11 @@ class ParksGrid extends LitElement {
             console.log(error.name + ': ' + error.message);
           }
         }
-      } else {
-        this.parkWeather = [];
       }
     } else {
       // Retrieve park weather data from local storage
       let weatherData = getLocalStorageWithExpiry(`weather_${identifier}`);
+
       // Build a request URL for the weather condition icons
       for (const day of weatherData) {
         day.weather[0].iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
@@ -241,6 +235,7 @@ class ParksGrid extends LitElement {
           borderColor: '#345124',
           glyphColor: '#ffffff',
         })
+
         // Create marker
         const marker = new AdvancedMarkerElement({
           map,
@@ -288,12 +283,11 @@ class ParksGrid extends LitElement {
     map.fitBounds(bounds);
   }
 
-  _selectLocation (identifier, lat, lng) {
-    console.log('location selected')
+  async _selectLocation (identifier, lat, lng) {
     this._setCurrentPark(identifier);
     this._zoomMap(this.map, lat, lng);
-    this._getParkAlerts(identifier);
-    this._getParkWeather(identifier, lat, lng);
+    await this._getParkAlerts(identifier);
+    await this._getParkWeather(identifier, lat, lng);
 
     document.dispatchEvent(new CustomEvent('parks:park-selected', {
       detail: {
@@ -330,10 +324,7 @@ class ParksGrid extends LitElement {
         </div>
       </section>
       <section id="parksContent" class="parks__section bg-scrub">
-        <div
-          id="interactionPane"
-          class="${this.isOpen ? 'is-open' : ''}"
-        >
+        <div id="interactionPane">
           <div class="header bg-olive c-white">
             <div class="header__content">
               <h1>Explore California NPS</h1>
@@ -346,24 +337,25 @@ class ParksGrid extends LitElement {
           ${when(this.filteredParks.length,
             () => html`
               <ul id="parksList" class="grid">
-                ${repeat(this.filteredParks, (park) => park.parkCode, (park, index) => html`
-                  <li
-                    aria-label="View ${park.fullName}"
-                    class="card bg-sand c-green"
-                    tabindex="0"
-                    @click=${() => this._selectLocation(park.parkCode, park.latitude, park.longitude)}
-                    @keydown=${(e) => {
-                      if (e.key === 'Enter') this._selectLocation(park.parkCode, park.latitude, park.longitude)
-                    }}
-                  >
-                    ${park.fullName}
-                  </li>
-                `)}
+                ${repeat(this.filteredParks,
+                  (park) => park.parkCode,
+                  (park, index) => html`
+                    <parks-card .park=${park}></parks-card>
+                  `
+                )}
               </ul>
             `,
             () => html`
-              <div id="listError" class="flex flex-column flex-center">
-                <p class="white">Sorry, there are no results for that search term.</p>
+              <div
+                id="listError"
+                class="flex flex-column flex-center"
+              >
+                <p
+                  class="white"
+                  role="alert"
+                >
+                    Sorry, there are no results for that search term.
+                </p>
               </div>
             `,
           )}
@@ -393,8 +385,6 @@ class ParksGrid extends LitElement {
           width: 50%;
         }
       }
-      #parksMap {
-      }
       #map {
         height: 100%;  
         max-height: 360px;
@@ -421,26 +411,6 @@ class ParksGrid extends LitElement {
         list-style: none;
         margin: 0;
         padding: var(--var-spacing-4);
-      }
-      .card {
-        border-radius: var(--var-spacing);
-        box-sizing: border-box;
-        cursor: pointer;
-        font: var(--var-font-p);
-        font-family: var(--var-font-heading);
-        min-height: 100px;
-        padding: 8px;
-        text-align: center;
-        text-decoration: none;
-
-        &:hover,
-        &:focus {
-          background: var(--var-color-sand);
-        }
-        a {
-          color: var(--var-color-green);
-          text-decoration: none;
-        }
       }
     `
   ];
