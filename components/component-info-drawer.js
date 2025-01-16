@@ -40,11 +40,6 @@ class ParksInfoDrawer extends LitElement {
     this.active = false;
     window.location.hash = 'main';
     document.dispatchEvent(new CustomEvent('parks:info-drawer-closed'));
-
-    const $grid = document.querySelector('parks-grid');
-    for (const infoWindow of $grid.mapInfoWindows) {
-      infoWindow.instance.close();
-    }
   }
 
   render() {
@@ -67,11 +62,8 @@ class ParksInfoDrawer extends LitElement {
               >
                 Back
               </button>
-              <div class="flex flex-nowrap">
-                <h2
-                  id="infoDrawerTitle"
-                  class="flex flex-center"
-                >
+              <section id="description">
+                <h2 id="infoDrawerTitle">
                   ${this.currentPark.fullName}
                   <a
                     aria-label="Visit this park's website (opens in a new tab)."
@@ -82,8 +74,8 @@ class ParksInfoDrawer extends LitElement {
                     title="Visit Website">
                   </a>
                 </h2>
-              </div>
-              <p>${this.currentPark.description}</p>
+                <p>${this.currentPark.description}</p>
+              </section>
               <section id="weather">
                 <h3>Weather</h3>
                 <p class="weather__description">
@@ -104,7 +96,7 @@ class ParksInfoDrawer extends LitElement {
                             ${formatTimestamp(day.dt)}
                           </span>
                           <span class="weather-item__temp">
-                            ${day.temp.max.toFixed()} / ${day.temp.min.toFixed()}&#186;F
+                            ${day.temp.max.toFixed()}&#186;F / ${day.temp.min.toFixed()}&#186;F
                           </span>
                         </li>
                       `)}
@@ -129,30 +121,31 @@ class ParksInfoDrawer extends LitElement {
                     <ul>
                       ${repeat(this.currentParkAlerts,
                         (alert) => alert.id,
-                        (alert, index) => html`
+                        (alert) => html`
                           <li class="alert-item">
                             <span>${alert.title}</span>
-                            <a
-                              href="${alert.url}"
-                              target="_blank"
-                              rel="noopener"
-                              class="has-icon flex flex-center c-teal p3"
-                            >
-                              More Information
-                              <span class="icon__link-external icon__link-external--info" aria-label="Link opens in a new tab."></span>
-                            </a>
+                            ${when(alert.url,
+                              () => html`
+                                <a
+                                  href="${alert.url}"
+                                  target="_blank"
+                                  rel="noopener"
+                                  class="has-icon flex flex-center c-teal p3"
+                                >
+                                  More Information<span class="icon__link-external icon__link-external--info" aria-label="Link opens in a new tab."></span>
+                                </a>
+                              `,
+                              () => nothing,
+                            )}
                           </li>
                         `
                       )}
                     </ul>
                   `,
                   () => html`
-                    <div
-                      class="p2"
-                      role="status"
-                    >
-                      Park alerts are not available at this time. Please visit the <a href="${this.currentPark.url}">park's website</a> for up-to-date information on park conditions, or try again later.
-                    </div>
+                    <p role="status">
+                      Park alerts are not available at this time. Please visit the <a href="${this.currentPark.url}" target="_blank" rel="noopener">park's website</a> for up-to-date information on park conditions, or try again later.
+                    </p>
                   `,
                 )}
               </section>
@@ -265,8 +258,10 @@ class ParksInfoDrawer extends LitElement {
       }
       .icon__link-external--heading {
         background: url('./assets/img/icon__link-external--green.svg') left center/contain no-repeat;
-        margin-left: .5em;
-        width: .6em;
+        margin-left: .3em;
+        width: .7em;
+        position: relative;
+        top: .1em;
       }
       .icon__link-external--info {
         background: url('./assets/img/icon__link-external--teal.svg') left top/contain no-repeat;

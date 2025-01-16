@@ -48,18 +48,22 @@ class ParksGrid extends LitElement {
     super.connectedCallback();
 
     await this.updateComplete;
-    // TODO: When user goes back/forward, check if a park should be selected
-    // window.addEventListener('popstate', (event) => {
-    //   console.log('popstate')
-    //   console.log(event)
-    //   if (this.parkOnLoad) {
-    //     this._selectLocation(
-    //       this.parkOnLoad.parkCode,
-    //       this.parkOnLoad.latitude,
-    //       this.parkOnLoad.longitude,
-    //     )
-    //   }
-    // })
+
+    window.addEventListener('popstate', () => {
+      if (this.parkOnLoad) {
+        this._selectLocation(
+          this.parkOnLoad.parkCode,
+          this.parkOnLoad.latitude,
+          this.parkOnLoad.longitude,
+        )
+        for (const infoWindow of this.mapInfoWindows) {
+          infoWindow.instance.close();
+        }
+      } else {
+        const $infoDrawer = document.querySelector('parks-info-drawer');
+        if ($infoDrawer.active) $infoDrawer._closeInfoDrawer();
+      }
+    })
     document.addEventListener('parks:data-ready', () => {
       const $map = this.renderRoot.getElementById('map');
       if (this.parks?.length) this._initMap($map);
@@ -71,6 +75,9 @@ class ParksGrid extends LitElement {
       this._setRandomPark(event);
     })
     document.addEventListener('parks:info-drawer-closed', () => {
+      for (const infoWindow of this.mapInfoWindows) {
+        infoWindow.instance.close();
+      }
       this._zoomToBounds(this.map, this.mapBounds);
     })
 
@@ -227,9 +234,6 @@ class ParksGrid extends LitElement {
     for (const park of this.parks) {
       const latitude = Number(park.latitude);
       const longitude = Number(park.longitude);
-      
-      // TODO: If parks don't have coordinates, or their coordinates are 
-      // outside of California, give that park new coords inside of California.
 
       if ( latitude && longitude ) {
         // Configure marker appearance
@@ -254,8 +258,7 @@ class ParksGrid extends LitElement {
         this.mapMarkers.push(markerItem);
 
         const infoWindow = new InfoWindow({
-          // TODO: Style this
-          content: park.fullName,
+          headerContent: park.fullName
         });
         const infoWindowItem = {
           instance: infoWindow,
@@ -265,7 +268,10 @@ class ParksGrid extends LitElement {
         this.mapInfoWindows.push(infoWindowItem);
 
         google.maps.event.addListener(marker, 'click', () => {
-          infoWindow.open({  // TODO: make this happen whenever a park is selected, not just when a marker is clicked
+          for (const infoWindow of this.mapInfoWindows) {
+            infoWindow.instance.close();
+          }
+          infoWindow.open({
             anchor: marker,
             map: map
           });
