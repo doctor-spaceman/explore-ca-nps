@@ -13,6 +13,7 @@ class ParksGrid extends LitElement {
     mapBounds: {type: Object},
     currentPark:  {type: Object},
     randomPark: {type: Object},
+    mapInfoWindows: { type: Array },
     mapMarkers: { type: Array },
     searchTerm: { type: String },
   }
@@ -26,7 +27,9 @@ class ParksGrid extends LitElement {
   }
 
   get parkOnLoad() {
-    return this.parks?.find((park) => `#${park.parkCode}` === window.location.hash)
+    return this.parks?.find(
+      (park) => `#${park.parkCode}` === window.location.hash
+    )
   }
 
   constructor() {
@@ -36,6 +39,8 @@ class ParksGrid extends LitElement {
     this.parks = [];
     this.parkAlerts = [];
     this.parkWeather = [];
+    this.mapInfoWindows = [];
+    this.mapMarkers = [];
     this.searchTerm = '';
   }
 
@@ -66,7 +71,7 @@ class ParksGrid extends LitElement {
       this._setRandomPark(event);
     })
     document.addEventListener('parks:info-drawer-closed', () => {
-      this._zoomToBounds(this.map, this.mapBounds, this.mapMarkers);
+      this._zoomToBounds(this.map, this.mapBounds);
     })
 
     this._getParks();
@@ -157,7 +162,6 @@ class ParksGrid extends LitElement {
     let response;
     let data;
 
-    console.log(`${identifier}, ${lat}, ${lng}`)
     if (!getLocalStorageWithExpiry(`weather_${identifier}`)) {
       if (lat.length && lng.length ) {
         response = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lng}&units=imperial&exclude=current,minutely,hourly&appid=${APP_API_KEY_WEATHER}`);
@@ -176,7 +180,6 @@ class ParksGrid extends LitElement {
     
             // Store park weather data in this instance
             this.parkWeather = weatherData;
-
 
             // Store park weather data in local storage with 2h expiry
             setLocalStorageWithExpiry(`weather_${identifier}`, weatherData, 7200000);
@@ -216,9 +219,9 @@ class ParksGrid extends LitElement {
   }
 
   async _addLocations (map) {
+    const { InfoWindow } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
-    let markers = [];
     let bounds = new google.maps.LatLngBounds();
 
     for (const park of this.parks) {
@@ -238,14 +241,34 @@ class ParksGrid extends LitElement {
 
         // Create marker
         const marker = new AdvancedMarkerElement({
-          map,
+          map: map,
           position: {lat: latitude, lng: longitude},
           title: park.fullName,
           content: markerStyle.element,
         });
-        markers.push(marker);
+        const markerItem = {
+          instance: marker,
+          lat: latitude,
+          lng: longitude
+        }
+        this.mapMarkers.push(markerItem);
+
+        const infoWindow = new InfoWindow({
+          // TODO: Style this
+          content: park.fullName,
+        });
+        const infoWindowItem = {
+          instance: infoWindow,
+          lat: latitude,
+          lng: longitude
+        }
+        this.mapInfoWindows.push(infoWindowItem);
 
         google.maps.event.addListener(marker, 'click', () => {
+          infoWindow.open({  // TODO: make this happen whenever a park is selected, not just when a marker is clicked
+            anchor: marker,
+            map: map
+          });
           this._selectLocation(park.parkCode, park.latitude, park.longitude);
         });
 
@@ -256,8 +279,7 @@ class ParksGrid extends LitElement {
     this.mapBounds = bounds; // Store the bounds
     this._zoomToBounds(map, bounds); // Zoom the map to bounds
 
-    // Once the page has loaded and the map is ready, check
-    // if there's already a park that needs to be selected.
+    // When the page is requested with a park code in window.location.hash
     if (this.parkOnLoad) {
       this._selectLocation(
         this.parkOnLoad.parkCode,
@@ -296,6 +318,20 @@ class ParksGrid extends LitElement {
         selected_park_weather: this.parkWeather
       }
     }));
+
+    // Show info window
+    const activeInfoWindow = this.mapInfoWindows.find((infoWindow) => (
+      infoWindow.lat === Number(lat) && infoWindow.lng === Number(lng)
+    ));
+    const activeMarker = this.mapMarkers.find((marker) => (
+      marker.lat === Number(lat) && marker.lng === Number(lng)
+    ));
+    if (activeInfoWindow && activeMarker) {
+      activeInfoWindow.instance.open({
+        anchor: activeMarker.instance,
+        map: this.map
+      });
+    } 
   }
 
   _setCurrentPark (identifier) {
@@ -318,14 +354,13 @@ class ParksGrid extends LitElement {
       <section id="parksMap" class="parks__section bg-sand">
         <div
           id="map"
-          class="col-1-2"
           role="region"
           aria-label="National Parks in California on a Google Map">
         </div>
       </section>
       <section id="parksContent" class="parks__section bg-scrub">
         <div id="interactionPane">
-          <div class="header bg-olive c-white">
+          <header class="header bg-olive c-white">
             <div class="header__content">
               <h1>Explore California NPS</h1>
               <p>
@@ -333,7 +368,7 @@ class ParksGrid extends LitElement {
               </p>
             </div>
             <parks-actions parks-count=${this.parks.length}></parks-actions>
-          </div>
+          </header>
           ${when(this.filteredParks.length,
             () => html`
               <ul id="parksList" class="grid">
@@ -354,12 +389,20 @@ class ParksGrid extends LitElement {
                   class="white"
                   role="alert"
                 >
-                    Sorry, there are no results for that search term.
+                  Sorry, there are no results for that search term.
                 </p>
               </div>
             `,
           )}
         </div>
+        <footer id="footer" class="flex flex-justify-space-between c-white bg-olive">
+          <p class="p3">
+            Created by <a href="https://github.com/doctor-spaceman/explore-ca-nps" target="_blank" rel="noopener">Matt McLean</a>
+          </p>
+          <p class="p3">
+            Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a>
+          </p>
+        </footer>
       </section>
     `;
   }
@@ -374,8 +417,8 @@ class ParksGrid extends LitElement {
         flex-direction: column;
 
         @media screen and (min-width: 768px) {
-          height: 100vh;
           flex-direction: row;
+          height: 100vh;
         }
       }
       .parks__section {
@@ -411,6 +454,13 @@ class ParksGrid extends LitElement {
         list-style: none;
         margin: 0;
         padding: var(--var-spacing-4);
+      }
+      #footer {
+        padding: var(--var-spacing-4);
+        
+        p {
+          margin: 0;
+        }
       }
     `
   ];

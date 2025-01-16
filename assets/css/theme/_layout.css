@@ -1,16 +1,7 @@
 body {
-  display: flex;
-  flex-direction: column;
   overflow-x: hidden;
   position: relative;
 }
-#header {
-  flex-shrink: 0;
-}
 #main {
-  flex: 1 1 auto;
-}
-#footer {
-  flex-shrink: 0;
-  padding: var(--var-spacing-4);
+  position: relative;
 }

@@ -43,6 +43,13 @@ export const theme = css`
   .bg-scrub { background-color: var(--var-color-scrub); }
   .bg-teal { background-color: var(--var-color-teal); }
   .bg-white { background-color: var(--var-color-white); }
+
+  a {
+    color: var(--var-color-teal);
+  }
+  a:hover, a:focus {
+    color:var(--var-color-green);
+  }
 `
 
 export const structure = css`

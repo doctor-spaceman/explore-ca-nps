@@ -4,13 +4,8 @@ import { debounce } from '../assets/js/utils.js';
 
 class ParksActions extends LitElement {
   static properties = {
-    parksCount: {
-      type: Number,
-      attribute: 'parks-count',
-    },
-    searchTerm: {
-      type: String
-    },
+    parksCount: { type: Number },
+    searchTerm: { type: String },
   }
 
   constructor() {
@@ -20,6 +15,9 @@ class ParksActions extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+
+    const $grid = document.querySelector('parks-grid');
+    this.parksCount = $grid.parks.length;
   }
 
   _getRandomPark = (min, max) => {
@@ -105,7 +103,7 @@ class ParksActions extends LitElement {
         .park-actions__search-underline {
           display: block;
           background-color: var(--var-color-sage);
-          height: 2px;
+          height: calc(var(--var-spacing) / 2);
           width: 100%;
           position: absolute;
           left: 0;

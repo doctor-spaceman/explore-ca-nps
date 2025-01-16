@@ -23,11 +23,9 @@ class ParksInfoDrawer extends LitElement {
     super.connectedCallback();
 
     document.addEventListener('parks:park-selected', (event) => {
-      console.log(event.detail.selected_park_weather)
       this.currentPark = event.detail.selected_park;
       this.currentParkAlerts = event.detail.selected_park_alerts;
       this.currentParkWeather = event.detail.selected_park_weather;
-      console.log(event.detail.selected_park_weather)
       this._openInfoDrawer();
     })
   }
@@ -42,6 +40,11 @@ class ParksInfoDrawer extends LitElement {
     this.active = false;
     window.location.hash = 'main';
     document.dispatchEvent(new CustomEvent('parks:info-drawer-closed'));
+
+    const $grid = document.querySelector('parks-grid');
+    for (const infoWindow of $grid.mapInfoWindows) {
+      infoWindow.instance.close();
+    }
   }
 
   render() {
@@ -145,7 +148,7 @@ class ParksInfoDrawer extends LitElement {
                   `,
                   () => html`
                     <div
-                      class="p3"
+                      class="p2"
                       role="status"
                     >
                       Park alerts are not available at this time. Please visit the <a href="${this.currentPark.url}">park's website</a> for up-to-date information on park conditions, or try again later.
@@ -185,15 +188,15 @@ class ParksInfoDrawer extends LitElement {
         height: 100%;
         opacity: 0;
         overflow-y: auto;
-        padding: 24px;
+        padding: var(--var-spacing-6);
         visibility: hidden;
         width: 50%;
         transition: all .4s ease;
 
-        @media only screen and (max-width: 800px) {
+        @media only screen and (max-width: 768px) {
           display: none;
         }
-        @media only screen and (min-width: 800px) {
+        @media only screen and (min-width: 768px) {
           position: absolute;
           top: 0;
           right: -100%;
@@ -204,10 +207,10 @@ class ParksInfoDrawer extends LitElement {
         opacity: 1;
         visibility: visible;
 
-        @media only screen and (max-width: 800px) {
+        @media only screen and (max-width: 768px) {
           display: block;
         }
-        @media only screen and (min-width: 800px) {
+        @media only screen and (min-width: 768px) {
           right: 0;
           bottom: 0;
         }
@@ -222,15 +225,16 @@ class ParksInfoDrawer extends LitElement {
       }
       .weather__forecast {
         background: var(--var-color-sand);
-        border-radius: 8px;
+        border-radius: var(--var-spacing-2);
         list-style: none;
-        padding: 16px 16px 0px 16px;
+        padding: var(--var-spacing-4);
+        padding-bottom: 0;
       }
       .weather-item {
         font-family: var(--var-font-heading);
-        padding: 0px 4px 16px 4px;
+        padding: 0 var(--var-spacing) var(--var-spacing-4);
         text-align: center;
-        width: calc(25% - 16px);
+        width: calc(25% - var(--var-spacing-4));
 
         &:nth-child(1), 
         &:nth-child(2), 
@@ -240,8 +244,8 @@ class ParksInfoDrawer extends LitElement {
         }
       }
       .weather-item__icon {
-        height: 50px;
-        width: 50px;
+        height: calc(var(--var-spacing-10) + var(--var-spacing-3));
+        width: calc(var(--var-spacing-10) + var(--var-spacing-3));
       }
       #access li {
         margin-bottom: var(--var-spacing-4);
