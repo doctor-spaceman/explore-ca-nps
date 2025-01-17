@@ -1,4 +1,4 @@
-import { LitElement, css, html, repeat, when } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/all/lit-all.min.js';
+import { LitElement, css, html, nothing, repeat, when } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/all/lit-all.min.js';
 import { APP_API_KEY_NPS, APP_API_KEY_WEATHER } from '../assets/js/_keys.js';
 import { structure, theme, typography } from '../assets/js/styles.js';
 import { getLocalStorageWithExpiry, setLocalStorageWithExpiry } from '../assets/js/utils.js';
@@ -377,14 +377,21 @@ class ParksGrid extends LitElement {
           </header>
           ${when(this.filteredParks.length,
             () => html`
-              <ul id="parksList" class="grid">
+              <div
+                id="parksList"
+                class="grid"
+                role="list"
+              >
                 ${repeat(this.filteredParks,
                   (park) => park.parkCode,
                   (park, index) => html`
-                    <parks-card .park=${park}></parks-card>
+                    <parks-card
+                      .park=${park}
+                      role="listitem"
+                    ></parks-card>
                   `
                 )}
-              </ul>
+              </div>
             `,
             () => html`
               <div
@@ -401,14 +408,7 @@ class ParksGrid extends LitElement {
             `,
           )}
         </div>
-        <footer id="footer" class="flex flex-justify-space-between c-white bg-olive">
-          <p class="p3">
-            Created by <a href="https://github.com/doctor-spaceman/explore-ca-nps" target="_blank" rel="noopener">Matt McLean</a>
-          </p>
-          <p class="p3">
-            Powered by the <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener">National Park Service API</a>
-          </p>
-        </footer>
+        <parks-footer data-presentation="desktop"></parks-footer>
       </section>
     `;
   }
@@ -460,13 +460,6 @@ class ParksGrid extends LitElement {
         list-style: none;
         margin: 0;
         padding: var(--var-spacing-4);
-      }
-      #footer {
-        padding: var(--var-spacing-4);
-        
-        p {
-          margin: 0;
-        }
       }
     `
   ];

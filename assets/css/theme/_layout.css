@@ -5,3 +5,17 @@ body {
 #main {
   position: relative;
 }
+parks-footer[data-presentation="mobile"] {
+  display: block;
+
+  @media screen and (min-width: 768px) {
+    display: none;
+  }
+}
+parks-footer[data-presentation="desktop"] {
+  display: none;
+
+  @media screen and (min-width: 768px) {
+    display: block;
+  }
+}

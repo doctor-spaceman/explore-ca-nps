@@ -32,12 +32,14 @@ class ParksInfoDrawer extends LitElement {
 
   _openInfoDrawer () {
     this.active = true;
+    this.dataset.active = true;
     window.location.hash = this.currentPark.parkCode;
     document.dispatchEvent(new CustomEvent('parks:info-drawer-opened'));
   }
 
   _closeInfoDrawer () {
     this.active = false;
+    this.dataset.active = false;
     window.location.hash = 'main';
     document.dispatchEvent(new CustomEvent('parks:info-drawer-closed'));
   }
@@ -162,6 +164,41 @@ class ParksInfoDrawer extends LitElement {
     theme,
     typography,
     css`
+      :host {
+        position: absolute;
+        top: 0;
+        right: -100%;
+        bottom: 0;
+        width: 100%;
+
+        @media screen and (min-width: 768px) {
+          width: 50%;
+        }
+      }
+      :host([data-active="true"]) {
+        right: 0;
+      }
+      #infoDrawer {
+        box-sizing: border-box;
+        height: 100%;
+        opacity: 0;
+        overflow-y: auto;
+        padding: var(--var-spacing-6);        
+        position: absolute;
+        top: 0;
+        right: -100%;
+        bottom: 0;
+        width: 100%;
+        transition: opacity .2s ease;
+
+        @media only screen and (min-width: 768px) {
+          width: 50%;
+        }
+      }
+      #infoDrawer.active {
+        opacity: 1;
+        right: 0;
+      }
       #backButton {
         border: none;
         border-image: none;
@@ -175,38 +212,6 @@ class ParksInfoDrawer extends LitElement {
       #backButton:before {
         content: '<< ';
         display: inline;
-      }
-      #infoDrawer {
-        box-sizing: border-box;
-        height: 100%;
-        opacity: 0;
-        overflow-y: auto;
-        padding: var(--var-spacing-6);
-        visibility: hidden;
-        width: 50%;
-        transition: all .4s ease;
-
-        @media only screen and (max-width: 768px) {
-          display: none;
-        }
-        @media only screen and (min-width: 768px) {
-          position: absolute;
-          top: 0;
-          right: -100%;
-          bottom: 0;
-        }
-      }
-      #infoDrawer.active {
-        opacity: 1;
-        visibility: visible;
-
-        @media only screen and (max-width: 768px) {
-          display: block;
-        }
-        @media only screen and (min-width: 768px) {
-          right: 0;
-          bottom: 0;
-        }
       }
       .info-content {
         p {
