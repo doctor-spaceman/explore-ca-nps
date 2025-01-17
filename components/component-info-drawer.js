@@ -40,6 +40,7 @@ class ParksInfoDrawer extends LitElement {
   _closeInfoDrawer () {
     this.active = false;
     this.dataset.active = false;
+    this.currentPark = {};
     window.location.hash = 'main';
     document.dispatchEvent(new CustomEvent('parks:info-drawer-closed'));
   }

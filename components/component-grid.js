@@ -437,11 +437,10 @@ class ParksGrid extends LitElement {
         }
       }
       #map {
-        height: 100%;  
-        max-height: 360px;
+        height: 360px;
         
         @media only screen and (min-width: 768px) {
-          max-height: unset;
+          height: 100%;
         }
       }
       #parksContent {

@@ -13,12 +13,12 @@
   /*---Typography---*/  
   --var-font-primary: 'Vollkorn', Helvetica, sans-serif;
   --var-font-heading: 'Rubik', Helvetica, sans-serif;
-  --var-font-p: 16px var(--var-font-primary);
-  --var-font-p-small: 14px var(--var-font-primary);
-  --var-font-p-xsmall: 12px var(--var-font-primary);
-  --var-font-p-large: 18px var(--var-font-primary);
-  --var-font-h1: 32px var(--var-font-heading);
-  --var-font-h2: 28px var(--var-font-heading);
+  --var-font-p: 14px var(--var-font-primary);
+  --var-font-p-small: 12px var(--var-font-primary);
+  --var-font-p-xsmall: 10px var(--var-font-primary);
+  --var-font-p-large: 16px var(--var-font-primary);
+  --var-font-h1: 28px var(--var-font-heading);
+  --var-font-h2: 24px var(--var-font-heading);
   --var-font-h3: 20px var(--var-font-heading);
   --var-font-h4: 18px var(--var-font-heading);
 
@@ -35,6 +35,13 @@
   --var-spacing-10: calc(var(--var-spacing) * 10);
 
   @media screen and (min-width: 768px) {
-    
+    --var-font-p: 16px var(--var-font-primary);
+    --var-font-p-small: 14px var(--var-font-primary);
+    --var-font-p-xsmall: 12px var(--var-font-primary);
+    --var-font-p-large: 18px var(--var-font-primary);
+    --var-font-h1: 32px var(--var-font-heading);
+    --var-font-h2: 28px var(--var-font-heading);
+    --var-font-h3: 20px var(--var-font-heading);
+    --var-font-h4: 18px var(--var-font-heading);
   }
 }

@@ -62,11 +62,6 @@ if (!customElements.get('parks-card')) {
             padding: 8px;
             text-align: center;
             width: 100%;
-
-            @media screen and (min-width: 768px) {
-              font: var(--var-font-p);
-              font-family: var(--var-font-heading);
-            }
           }
           .card:hover,
           .card:focus {
