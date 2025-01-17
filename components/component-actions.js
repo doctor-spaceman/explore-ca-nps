@@ -84,11 +84,16 @@ class ParksActions extends LitElement {
           border-radius: var(--var-spacing);
           box-sizing: border-box;
           cursor: pointer;
-          font: var(--var-font-p);
+          font: var(--var-font-p-small);
           font-family: var(--var-font-heading);
           opacity: 1;
           padding: var(--var-spacing-4);
           width: 100%;
+
+          @media screen and (min-width: 768px) {
+            font: var(--var-font-p);
+            font-family: var(--var-font-heading);
+          }
         }
         button:hover,
         button:focus {
@@ -116,10 +121,14 @@ class ParksActions extends LitElement {
           border: 0;
           box-sizing: border-box;
           color: var(--var-color-white);
-          font: var(--var-font-p-large);
+          font: var(--var-font-p);
           height: 100%;
           outline: none;
           padding: 8px 0px 8px 34px;
+
+          @media screen and (min-width: 768px) {
+            font: var(--var-font-p-large);
+          }
         }
         #search::placeholder {
           color: rgba(255, 255, 255, .6);

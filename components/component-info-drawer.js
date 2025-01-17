@@ -190,10 +190,6 @@ class ParksInfoDrawer extends LitElement {
         bottom: 0;
         width: 100%;
         transition: opacity .2s ease;
-
-        @media only screen and (min-width: 768px) {
-          width: 50%;
-        }
       }
       #infoDrawer.active {
         opacity: 1;

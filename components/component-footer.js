@@ -5,7 +5,6 @@ if (!customElements.get('parks-footer')) {
   customElements.define('parks-footer',
     class ParksFooter extends LitElement {
       static properties = {
-        presentation: { type: String },
         resizing: { type: Boolean }
       }
 

@@ -16,6 +16,7 @@ class ParksGrid extends LitElement {
     mapInfoWindows: { type: Array },
     mapMarkers: { type: Array },
     searchTerm: { type: String },
+    resizing: { type: Boolean },
   }
 
   get filteredParks() {
@@ -42,6 +43,7 @@ class ParksGrid extends LitElement {
     this.mapInfoWindows = [];
     this.mapMarkers = [];
     this.searchTerm = '';
+    this.resizing = false;
   }
 
   async connectedCallback() {

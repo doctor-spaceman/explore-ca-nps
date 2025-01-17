@@ -49,12 +49,12 @@ if (!customElements.get('parks-card')) {
         theme,
         css`
           .card {
-            border: none;
+            border: 1px solid transparent;
             border-image: none;
             border-radius: var(--var-spacing);
             box-sizing: border-box;
             cursor: pointer;
-            font: var(--var-font-p);
+            font: var(--var-font-p-small);
             font-family: var(--var-font-heading);
             height: 100%;
             min-height: 100px;
@@ -62,9 +62,15 @@ if (!customElements.get('parks-card')) {
             padding: 8px;
             text-align: center;
             width: 100%;
+
+            @media screen and (min-width: 768px) {
+              font: var(--var-font-p);
+              font-family: var(--var-font-heading);
+            }
           }
           .card:hover,
           .card:focus {
+              border: 2px solid var(--var-color-green);
               opacity: .9;
             }
           }
