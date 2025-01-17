@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Explore National Parks in California</title>
+    <script src="https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/core/lit-core.min.js" type="module" defer></script>
+    <script type="module">
+      import { APP_API_KEY_GMAPS } from '././assets/js/_keys.js';
+      (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+        key: APP_API_KEY_GMAPS,
+        v: "weekly",
+      });
+    </script>
+    <script src="././components/component-overlay.js" type="module"></script>
+    <script src="././components/component-grid.js" type="module"></script>
+    <script src="././components/component-card.js" type="module"></script>
+    <script src="././components/component-actions.js" type="module"></script>
+    <script src="././components/component-info-drawer.js" type="module"></script>
+    <script src="././components/component-footer.js" type="module"></script>
+    <link type="text/css" rel="stylesheet" href="././assets/css/style.css"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Vollkorn&family=Rubik&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-sand">
+    <a href="#parksContent" id="skipToContent" class="sr-only">Skip to content</a>
+    <main id="main" class="flex flex-column flex-nowrap">
+      <parks-grid></parks-grid>
+      <parks-info-drawer></parks-info-drawer>
+      <parks-overlay></parks-overlay>
+    </main>
+    <parks-footer data-presentation="mobile"></parks-footer>
+    <noscript>
+      <p>This app requires Javascript.</p>
+    </noscript>
+  </body>
+</html>

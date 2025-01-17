@@ -1,0 +1,24 @@
+body {
+  font: var(--var-font-p-large);
+}
+p, .p1 { font: var(--var-font-p-large); }  
+.p2 { font: var(--var-font-p); }
+.p3 { font: var(--var-font-p-small); }  
+.p4 { font: var(--var-font-p-xsmall); }
+h1, .h1 {
+  font: var(--var-font-h1);
+  margin-top: 0px;
+}
+h2, .h2 {
+  color: var(--var-color-green);
+  font: var(--var-font-h2);
+  margin: 23px 0px 12px 0px;
+}
+h3, .h3 {
+  color: var(--var-color-green);
+  font: var(--var-font-h3);
+  margin: 20px 0px 12px 0px; 
+}
+h4, .h4 {
+  font: var(--var-font-h4);
+}

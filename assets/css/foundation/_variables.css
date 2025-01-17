@@ -1,0 +1,47 @@
+:root {
+  /*---Colors---*/
+  --var-color-white: #ffffff;
+  --var-color-black: #000000;
+  --var-color-green: #345124;
+  --var-color-olive: #46483C;
+  --var-color-faded-olive: #616453;
+  --var-color-sage: #6FAB81;
+  --var-color-sand: #EBE3CB;
+  --var-color-scrub: #A0AA8F;
+  --var-color-teal: #5A9B8B;
+
+  /*---Typography---*/  
+  --var-font-primary: 'Vollkorn', Helvetica, sans-serif;
+  --var-font-heading: 'Rubik', Helvetica, sans-serif;
+  --var-font-p: 14px var(--var-font-primary);
+  --var-font-p-small: 12px var(--var-font-primary);
+  --var-font-p-xsmall: 10px var(--var-font-primary);
+  --var-font-p-large: 16px var(--var-font-primary);
+  --var-font-h1: 28px var(--var-font-heading);
+  --var-font-h2: 24px var(--var-font-heading);
+  --var-font-h3: 20px var(--var-font-heading);
+  --var-font-h4: 18px var(--var-font-heading);
+
+  /*---Spacing---*/
+  --var-spacing: 4px;
+  --var-spacing-2: calc(var(--var-spacing) * 2);
+  --var-spacing-3: calc(var(--var-spacing) * 3);
+  --var-spacing-4: calc(var(--var-spacing) * 4);
+  --var-spacing-5: calc(var(--var-spacing) * 5);
+  --var-spacing-6: calc(var(--var-spacing) * 6);
+  --var-spacing-7: calc(var(--var-spacing) * 7);
+  --var-spacing-8: calc(var(--var-spacing) * 8);
+  --var-spacing-9: calc(var(--var-spacing) * 9);
+  --var-spacing-10: calc(var(--var-spacing) * 10);
+
+  @media screen and (min-width: 768px) {
+    --var-font-p: 16px var(--var-font-primary);
+    --var-font-p-small: 14px var(--var-font-primary);
+    --var-font-p-xsmall: 12px var(--var-font-primary);
+    --var-font-p-large: 18px var(--var-font-primary);
+    --var-font-h1: 32px var(--var-font-heading);
+    --var-font-h2: 28px var(--var-font-heading);
+    --var-font-h3: 20px var(--var-font-heading);
+    --var-font-h4: 18px var(--var-font-heading);
+  }
+}
