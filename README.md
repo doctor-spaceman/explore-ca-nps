@@ -8,7 +8,6 @@ As a fan of parks and open spaces, I thought I’d see what the National Park Se
 I used the Google Maps API to display the parks on a map. I also integrated with the OpenWeather API to show a weather forecast for each park. Both of these features improved the app’s usefulness as a lightweight trip planning tool. I love being able to load up the app and immediately gain a better understanding of my state’s national parks and monuments.
 
 ## Technologies
-- Webpack
 - Lit
 
 ## APIs
