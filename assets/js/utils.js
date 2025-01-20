@@ -46,3 +46,7 @@ export const getLocalStorageWithExpiry = (key) => {
 
   return item.value;
 }
+
+export const isMobile = () => {
+  return window.innerWidth < 768;
+}
