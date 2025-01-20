@@ -1,7 +1,7 @@
 import { LitElement, css, html, nothing, repeat, when } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/all/lit-all.min.js';
 import { APP_API_KEY_NPS, APP_API_KEY_WEATHER } from '../assets/js/_keys.js';
 import { structure, theme, typography } from '../assets/js/styles.js';
-import { getLocalStorageWithExpiry, setLocalStorageWithExpiry } from '../assets/js/utils.js';
+import { isMobile, getLocalStorageWithExpiry, setLocalStorageWithExpiry } from '../assets/js/utils.js';
 
 class ParksGrid extends LitElement {
   static properties = {
@@ -273,10 +273,12 @@ class ParksGrid extends LitElement {
           for (const infoWindow of this.mapInfoWindows) {
             infoWindow.instance.close();
           }
-          infoWindow.open({
-            anchor: marker,
-            map: map
-          });
+          if (!isMobile()) {
+            infoWindow.open({
+              anchor: marker,
+              map: map
+            });
+          }
           this._selectLocation(park.parkCode, park.latitude, park.longitude);
         });
 
@@ -315,7 +317,7 @@ class ParksGrid extends LitElement {
 
   async _selectLocation (identifier, lat, lng) {
     this._setCurrentPark(identifier);
-    this._zoomMap(this.map, lat, lng);
+    if (!isMobile()) this._zoomMap(this.map, lat, lng);
     await this._getParkAlerts(identifier);
     await this._getParkWeather(identifier, lat, lng);
 
@@ -327,19 +329,21 @@ class ParksGrid extends LitElement {
       }
     }));
 
-    // Show info window
-    const activeInfoWindow = this.mapInfoWindows.find((infoWindow) => (
-      infoWindow.lat === Number(lat) && infoWindow.lng === Number(lng)
-    ));
-    const activeMarker = this.mapMarkers.find((marker) => (
-      marker.lat === Number(lat) && marker.lng === Number(lng)
-    ));
-    if (activeInfoWindow && activeMarker) {
-      activeInfoWindow.instance.open({
-        anchor: activeMarker.instance,
-        map: this.map
-      });
-    } 
+    if (!isMobile()) {
+      // Show info window
+      const activeInfoWindow = this.mapInfoWindows.find((infoWindow) => (
+        infoWindow.lat === Number(lat) && infoWindow.lng === Number(lng)
+      ));
+      const activeMarker = this.mapMarkers.find((marker) => (
+        marker.lat === Number(lat) && marker.lng === Number(lng)
+      ));
+      if (activeInfoWindow && activeMarker) {
+        activeInfoWindow.instance.open({
+          anchor: activeMarker.instance,
+          map: this.map
+        });
+      } 
+    }
   }
 
   _setCurrentPark (identifier) {

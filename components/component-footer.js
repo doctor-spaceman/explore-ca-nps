@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing, when } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.2.1/all/lit-all.min.js';
 import { structure, theme, typography } from '../assets/js/styles.js';
+import { isMobile } from '../assets/js/utils.js';
 
 if (!customElements.get('parks-footer')) {
   customElements.define('parks-footer',
@@ -30,7 +31,7 @@ if (!customElements.get('parks-footer')) {
       }
 
       _getPresentation() {
-        return this.presentation = window.innerWidth <= 768
+        return this.presentation = isMobile()
           ? 'mobile'
           : 'desktop';
       }
